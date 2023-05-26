@@ -8,7 +8,7 @@ import java.awt.event.*;
 
 public class Main extends GameEngine {
     public static void main(String args[]) {
-        createGame(new Main());
+        createGame(new Main(),144);
     }
     //*******************************************************
     // ************************Game**************************
@@ -53,39 +53,39 @@ public class Main extends GameEngine {
         drawPlatformLarge();
         drawBall();
     }
-    public void drawMenu(){                                     // +
+    public void drawMenu(){
         changeColor(Color.BLUE);
         drawText(width()/2-55,50, "Menu");
-        if(menuOption == 0) {                                   // +
-            changeColor(Color.darkGray);                        // +
-            drawText(width()/2 -50, 150, "Play");        // +
-            changeColor(Color.blue);                            // +
-            drawSolidCircle(100,135, 20);            // +
-            drawSolidCircle(400,135, 20);            // +
-        } else {                                                // +
-            changeColor(Color.white);                           // +
-            drawText(width()/2-50, 150, "Play");         // +
+        if(menuOption == 0) {
+            changeColor(Color.darkGray);
+            drawText(width()/2 -50, 150, "Play");
+            changeColor(Color.blue);
+            drawSolidCircle(100,135, 20);
+            drawSolidCircle(400,135, 20);
+        } else {
+            changeColor(Color.white);
+            drawText(width()/2-50, 150, "Play");
         }
-        if(menuOption == 1) {                                   // +
-            changeColor(Color.darkGray);                        // +
-            drawText(width()/2-65, 200, "Levels");     // +
-            changeColor(Color.blue);                            // +
-            drawSolidCircle(100,185, 20);            // +
-            drawSolidCircle(400,185, 20);            // +
-        } else {                                                // +
-            changeColor(Color.white);                           // +
-            drawText(width()/2-65, 200, "Levels");     // +
+        if(menuOption == 1) {
+            changeColor(Color.darkGray);
+            drawText(width()/2-65, 200, "Levels");
+            changeColor(Color.blue);
+            drawSolidCircle(100,185, 20);
+            drawSolidCircle(400,185, 20);
+        } else {
+            changeColor(Color.white);
+            drawText(width()/2-65, 200, "Levels");
         }
-        if(menuOption == 2) {                                   // +
-            changeColor(Color.darkGray);                        // +
-            drawText(width()/2-48, 250, "Exit");        // +
-            changeColor(Color.blue);                            // +
-            drawSolidCircle(100,235, 20);           // +
-            drawSolidCircle(400,235, 20);           // +
-        } else {                                                // +
-            changeColor(Color.WHITE);                           // +
-            drawText(width()/2-48, 250, "Exit");        // +
-        }                                                       // +
+        if(menuOption == 2) {
+            changeColor(Color.darkGray);
+            drawText(width()/2-48, 250, "Exit");
+            changeColor(Color.blue);
+            drawSolidCircle(100,235, 20);
+            drawSolidCircle(400,235, 20);
+        } else {
+            changeColor(Color.WHITE);
+            drawText(width()/2-48, 250, "Exit");
+        }
     }
     public void drawLevels(){
         changeColor(Color.BLUE);
@@ -344,7 +344,7 @@ public class Main extends GameEngine {
     double[] platformSmallPositionY;
     double[] platfromSmallVerlocityX;
     public void initPlatfromSmall(){
-        maxPlatfromsSmall = 4;
+        maxPlatfromsSmall = 0;
         platformSmallPositionX = new double[100];
         platformSmallPositionY = new double[100];
         platfromSmallVerlocityX = new double[100];
@@ -375,16 +375,15 @@ public class Main extends GameEngine {
     //*******************************************************
     double maxPlatfromsLarge;
     double[] platformLargePositionX;
-    double[] platformLargePositionY;
+    double platformLargePositionY;
     double[] platfromLargeVerlocityX;
     public void initPlatfromLarge(){
-        maxPlatfromsLarge =3;
+        maxPlatfromsLarge =5;
         platformLargePositionX = new double[100];
-        platformLargePositionY = new double[100];
         platfromLargeVerlocityX = new double[100];
-        for(int i=0; i<maxPlatfromsLarge; i++) {
-            platformLargePositionX[i] += 500-i*600;
-            platformLargePositionY[i] += 420;
+        platformLargePositionY = 420;
+        for(int i=0; i<=maxPlatfromsLarge; i++) {
+            platformLargePositionX[i] = 250-i*50;
             platfromLargeVerlocityX[i] = 200;
         }
     }
@@ -396,11 +395,11 @@ public class Main extends GameEngine {
         }
     }
     public void drawPlatformLarge() {
-        for(int i=0; i<maxPlatfromsLarge; i++) {
+        for(int i=0; i<=maxPlatfromsLarge; i++) {
             changeColor(white);
             saveCurrentTransform();
             translate(0, 0);
-            drawSolidRectangle(platformLargePositionX[i], platformLargePositionY[i], 500, 25);
+            drawSolidRectangle(platformLargePositionX[i], platformLargePositionY, 500, 25);
             restoreLastTransform();
         }
     }
@@ -431,7 +430,7 @@ public class Main extends GameEngine {
         if (Up) {
             ballPositionY -= ballVerlocityY * dt * 30;
             for(int i=0; i<maxPlatfromsLarge;i++) {
-                if (ballPositionY <= platformLargePositionY[i]- bounceHeight) {
+                if (ballPositionY <= platformLargePositionY- bounceHeight) {
                     ballVerlocityY += -1;
                 }
             }
@@ -442,7 +441,7 @@ public class Main extends GameEngine {
     }
     public void checkBallOnPlatfrom(){
         for(int i=0;i<maxPlatfromsLarge;i++){
-            if(ballPositionY >= platformLargePositionY[i]-20){
+            if(ballPositionY >= platformLargePositionY-20){
                 ballVerlocityY = 5;
             }
         }
