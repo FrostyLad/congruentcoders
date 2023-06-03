@@ -1,31 +1,34 @@
 //Georgia Moberly - ID: 22009670
-//Adam Pejcic - ID:
+//Adam Pejcic - ID: 22011604
 //Braden Johnston - ID: 20005898
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 
 public class Main extends GameEngine {
     public static void main(String[] args) {
-        createGame(new Main());
+        createGame(new Main(), 30);
     }
     //*******************************************************
     // ************************Game**************************
     //*******************************************************
-    enum GameState {Menu, Levels, Play, Exit,GameOver,LevelComplete};
+    enum GameState {Menu, Levels, Play, Exit,GameOver,LevelComplete}
+
     GameState state = GameState.Menu;
-    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width,levelCompOption;
+    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption;
+    final int platformHeight = 25;
     double gameSpeed;
-    Scanner platformreader;
+    Scanner platformreader, enemyreader;
     public void init() {
         try {
             platformreader = new Scanner(new File("platformPositions"));
+            enemyreader = new Scanner(new File("enemyPositions"));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +40,8 @@ public class Main extends GameEngine {
         gameOver =0;
         gameSpeed = 200;
         gameLevel = 1;
-        width = width();
+        width = 500;
+        height = 500;
         initGame();
     }
     public void update(double dt) {
@@ -47,7 +51,7 @@ public class Main extends GameEngine {
     }
     public void paintComponent() {
         changeBackgroundColor(black);
-        clearBackground(500, 500);
+        clearBackground(width, height);
         if(state == GameState.Menu) {
             drawMenu();
         }else if(state == GameState.Levels) {
@@ -66,9 +70,7 @@ public class Main extends GameEngine {
         if(gameLevel == 1) {
             drawSpikes();
             drawPlatforms();
-            drawSpikeEnemy();
-            drawBounceEnemy();
-            drawJumpPad();
+            drawEnemies();
             drawBall();
             drawFlag();
         }else{
@@ -82,33 +84,33 @@ public class Main extends GameEngine {
         changeColor(Color.BLUE);
         drawText(width/2.0-55,50, "Menu");
         if(menuOption == 0) {
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(width/2.0 -50, 150, "Play");
             changeColor(Color.blue);
             drawSolidCircle(100,135, 20);
             drawSolidCircle(400,135, 20);
         } else {
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(width/2.0-50, 150, "Play");
         }
         if(menuOption == 1) {
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(width/2.0-65, 200, "Levels");
             changeColor(Color.blue);
             drawSolidCircle(100,185, 20);
             drawSolidCircle(400,185, 20);
         } else {
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(width/2.0-65, 200, "Levels");
         }
         if(menuOption == 2) {
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(width/2.0-48, 250, "Exit");
             changeColor(Color.blue);
             drawSolidCircle(100,235, 20);
             drawSolidCircle(400,235, 20);
         } else {
-            changeColor(Color.WHITE);
+            changeColor(Color.darkGray);
             drawText(width/2.0-48, 250, "Exit");
         }
     }
@@ -116,53 +118,53 @@ public class Main extends GameEngine {
         changeColor(Color.BLUE);
         drawText(width/2.0-55,50, "Levels");
         if (levelExit == 0){
-            changeColor(Color.white);
-            drawText(200, 400, "Main Menu", 20);
+            changeColor(Color.darkGray);
+            drawText(200, 400, "Main Menu", 30);
             if (levelMenu == 1 ){
-                changeColor(Color.darkGray);
+                changeColor(Color.WHITE);
                 drawText(200,300,"1",200);
-                changeColor(Color.white);
+                changeColor(Color.darkGray);
                 drawText(300,300,"2",100);
                 drawText(360,300,"3",75);
                 drawText(410,300,"4",50);
                 drawText(450,300,"5",30);
             }else if(levelMenu == 2){
-                changeColor(Color.darkGray);
+                changeColor(Color.WHITE);
                 drawText(200,300,"2",200);
-                changeColor(Color.white);
+                changeColor(Color.darkGray);
                 drawText(300,300,"3",100);
                 drawText(360,300,"4",75);
                 drawText(410,300,"5",50);
                 drawText(160,300,"1",100);
             } else if(levelMenu == 3){
-                changeColor(Color.darkGray);
+                changeColor(Color.WHITE);
                 drawText(200,300,"3",200);
-                changeColor(Color.white);
+                changeColor(Color.darkGray);
                 drawText(300,300,"4",100);
                 drawText(360,300,"5",75);
                 drawText(160,300,"2",100);
                 drawText(120,300,"1",75);
             }else if(levelMenu == 4){
-                changeColor(Color.darkGray);
+                changeColor(Color.WHITE);
                 drawText(200,300,"4",200);
-                changeColor(Color.white);
+                changeColor(Color.darkGray);
                 drawText(300,300,"5",100);
                 drawText(150,300,"3",100);
                 drawText(110,300,"2",75);
                 drawText(90,300,"1",50);
             }else if(levelMenu == 5){
-                changeColor(Color.darkGray);
+                changeColor(Color.WHITE);
                 drawText(200,300,"5",200);
-                changeColor(Color.white);
+                changeColor(Color.darkGray);
                 drawText(150,300,"4",100);
                 drawText(110,300,"3",75);
                 drawText(90,300,"2",50);
                 drawText(70,300,"1",30);
             }
         }else if(levelExit == 1){
-            changeColor(Color.darkGray);
-            drawText(200, 400, "Main Menu", 20);
             changeColor(Color.white);
+            drawText(200, 400, "Main Menu", 30);
+            changeColor(Color.darkGray);
             if (levelMenu == 1 ){
                 drawText(200,300,"1",200);
                 drawText(300,300,"2",100);
@@ -200,22 +202,22 @@ public class Main extends GameEngine {
         changeColor(Color.BLUE);
         drawText(100,150, "Do you want to exit?");
         if(exitOption == 0){
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(100, 300, "No");
             changeColor(Color.blue);
             drawSolidCircle(80,285,15);
         } else {
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(100, 300, "No");
             changeColor(Color.blue);
         }
         if (exitOption == 1) {
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(400, 300, "Yes");
             changeColor(Color.blue);
             drawSolidCircle(380,285,15);
         }else{
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(400, 300, "Yes");
             changeColor(Color.blue);
         }
@@ -224,22 +226,22 @@ public class Main extends GameEngine {
         changeColor(Color.BLUE);
         drawText(100,150, "Game Over");
         if(gameOver == 0){
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(100, 300, "Main Menu");
             changeColor(Color.blue);
             drawSolidCircle(80,285,15);
         } else {
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(100, 300, "Main Menu");
             changeColor(Color.blue);
         }
         if (gameOver == 1) {
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(400, 300, "Exit");
             changeColor(Color.blue);
             drawSolidCircle(380,285,15);
         }else{
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(400, 300, "Exit");
             changeColor(Color.blue);
         }
@@ -248,39 +250,35 @@ public class Main extends GameEngine {
         changeColor(Color.BLUE);
         drawText(50,150, "You Completed Level "+gameLevel+"!");
         if(levelCompOption == 0){
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(150, 300, "Next Level");
             changeColor(Color.blue);
             drawSolidCircle(80,285,15);
         } else {
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(150, 300, "Next Level");
         }
         if (levelCompOption == 1) {
-            changeColor(Color.darkGray);
+            changeColor(Color.WHITE);
             drawText(150, 400, "Main Menu");
             changeColor(Color.blue);
             drawSolidCircle(80,385,15);
         }else{
-            changeColor(Color.white);
+            changeColor(Color.darkGray);
             drawText(150, 400, "Main Menu");
         }
     }
     public void initGame(){
         initBall();
-        initJumpPad();
         initSpkies();
         initPlatforms();
-        initBounceEnemy();
-        initSpikeEnemy();
+        initEnemies();
         initFlag();
     }
     public void updateGame(double dt){
-        updateJumpPad(dt);
         updatePlatforms(dt);
         updateSpikes(dt);
-        updateSpikeEnemy(dt);
-        updateBounceEnemy(dt);
+        updateEnemies(dt);
         updateBall(dt);
         updateFlag(dt);
     }
@@ -295,18 +293,18 @@ public class Main extends GameEngine {
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                 if (ballVelocityX > 50) {
-                    ballVelocityX = 50;
+                    ballVelocityX -= (ballVelocityX-50)/2;
                 }
-                ballVelocityX -= 5;
+                ballVelocityX -= 15;
             }
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 if (ballVelocityX < -50) {
-                    ballVelocityX = -50;
+                    ballVelocityX -= (ballVelocityX+50)/2;
                 }
-                ballVelocityX += 5;
+                ballVelocityX += 15;
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                if (checkBallOnPlatform() == 0) {
+                if (checkBallOnPlatform()[1] == 0) {
                     ballColour = Color.gray;
                     heavy = true;
                 }
@@ -366,23 +364,23 @@ public class Main extends GameEngine {
                     levelExit =0;
                 }else if (levelMenu == 1){
                     gameLevel = 1;
-                    initGame();
+                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 2){
                     gameLevel = 2;
-                    initGame();
+                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 3){
                     gameLevel = 3;
-                    initGame();
+                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 4){
                     gameLevel = 4;
-                    initGame();
+                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 5){
                     gameLevel = 5;
-                    initGame();
+                    init();
                     state = GameState.Play;
                 }
             }
@@ -468,11 +466,13 @@ public class Main extends GameEngine {
     //*******************************************************
     ArrayList<Double> platformXSmallPositionX, platformXSmallPositionY, platformSmallPositionX, platformSmallPositionY,
             platformMedPositionX, platformMedPositionY, platformLargePositionX, platformLargePositionY,
-            platformVertPositionX, platformVertPositionY;
+            platformVertPositionX, platformVertPositionY, jumpPadPositionX, jumpPadPositionY;
     ArrayList<ArrayList<Double>> platforms;
 
     String[] currentLine;
     public void initPlatforms(){
+        jumpPadPositionX = new ArrayList<>();
+        jumpPadPositionY = new ArrayList<>();
         platformXSmallPositionX = new ArrayList<>();
         platformXSmallPositionY = new ArrayList<>();
         platformSmallPositionX = new ArrayList<>();
@@ -507,6 +507,10 @@ public class Main extends GameEngine {
                         platformVertPositionX.add(Double.parseDouble(currentLine[1]));
                         platformVertPositionY.add(Double.parseDouble(currentLine[2]));
                     }
+                    case "5" -> {
+                        jumpPadPositionX.add(Double.parseDouble(currentLine[1]));
+                        jumpPadPositionY.add(Double.parseDouble(currentLine[2]));
+                    }
                 }
             }
         }else if(gameLevel == 2) {
@@ -515,6 +519,7 @@ public class Main extends GameEngine {
     public void updatePlatforms(double dt) {
         platforms = new ArrayList<>();
         changeColor(white);
+        doUpdate(dt, jumpPadPositionX, jumpPadPositionY, 5, 30);
         doUpdate(dt, platformXSmallPositionX, platformXSmallPositionY, 0, 100);
         doUpdate(dt, platformSmallPositionX, platformSmallPositionY, 1, 200);
         doUpdate(dt, platformMedPositionX, platformMedPositionY, 2, 400);
@@ -572,182 +577,105 @@ public class Main extends GameEngine {
             drawSolidRectangle(platformVertPositionX.get(i), platformVertPositionY.get(i), 25, 100);
             restoreLastTransform();
         }
+        for (int i = 0; i < jumpPadPositionX.size(); i++) {
+            changeColor(green);
+            saveCurrentTransform();
+            translate(0, 0);
+            drawSolidRectangle(jumpPadPositionX.get(i), jumpPadPositionY.get(i), 30, 5);
+            restoreLastTransform();
+        }
     }
 
     //*******************************************************
-    //**********************Spike Enemy**********************
+    //***********************Enemies*************************
     //*******************************************************
-    double[] spikeEnemyPosistionX;
-    double[] spikeEnemyPosistionY;
-    double maxSpikeEnemy;
-    public void initSpikeEnemy(){
+    ArrayList<Double> spikeEnemyPosistionX, spikeEnemyPosistionY, bounceEnemyPosistionX, bounceEnemyPosistionY;
+    public void initEnemies(){
+        spikeEnemyPosistionX = new ArrayList<>();
+        spikeEnemyPosistionY = new ArrayList<>();
+        bounceEnemyPosistionX = new ArrayList<>();
+        bounceEnemyPosistionY = new ArrayList<>();
+
         if(gameLevel == 1) {
-            maxSpikeEnemy = 10;
-            spikeEnemyPosistionX = new double[20];
-            spikeEnemyPosistionY = new double[20];
-            for (int i = 0; i < maxSpikeEnemy; i++) {
-                if (i == 0) {
-                    spikeEnemyPosistionX[i] = 1550;
-                    spikeEnemyPosistionY[i] = 400;
-                } else if (i == 1) {
-                    spikeEnemyPosistionX[i] = 12050;
-                    spikeEnemyPosistionY[i] = 300;
-                } else if (i == 2) {
-                    spikeEnemyPosistionX[i] = 12090;
-                    spikeEnemyPosistionY[i] = 300;
-                } else if (i == 3) {
-                    spikeEnemyPosistionX[i] = 13370;
-                    spikeEnemyPosistionY[i] = 400;
-                } else if (i == 4) {
-                    spikeEnemyPosistionX[i] = 13410;
-                    spikeEnemyPosistionY[i] = 400;
-                } else if (i == 5) {
-                    spikeEnemyPosistionX[i] = 13450;
-                    spikeEnemyPosistionY[i] = 400;
-                } else if (i == 6) {
-                    spikeEnemyPosistionX[i] = 13670;
-                    spikeEnemyPosistionY[i] = 400;
-                } else if (i == 7) {
-                    spikeEnemyPosistionX[i] = 13710;
-                    spikeEnemyPosistionY[i] = 400;
-                } else if (i == 8) {
-                    spikeEnemyPosistionX[i] = 14580;
-                    spikeEnemyPosistionY[i] = 300;
-                } else if (i == 9) {
-                    spikeEnemyPosistionX[i] = 14620;
-                    spikeEnemyPosistionY[i] = 300;
+            while (enemyreader.hasNext()) {
+                currentLine = enemyreader.nextLine().split(",");
+                switch (currentLine[0]) {
+                    case "0" -> {
+                        spikeEnemyPosistionX.add(Double.parseDouble(currentLine[1]));
+                        spikeEnemyPosistionY.add(Double.parseDouble(currentLine[2]));
+                    }
+                    case "1" -> {
+                        bounceEnemyPosistionX.add(Double.parseDouble(currentLine[1]));
+                        bounceEnemyPosistionY.add(Double.parseDouble(currentLine[2]));
+                    }
                 }
             }
         }else if(gameLevel==2){}
     }
-    public void drawSpikeEnemy() {
+    public void drawEnemies() {
         if(gameLevel==1) {
-            for (int i = 0; i < maxSpikeEnemy; i++) {
+            for (int i = 0; i < spikeEnemyPosistionX.size(); i++) {
                 changeColor(Color.RED);
-                translate(spikeEnemyPosistionX[i], spikeEnemyPosistionY[i]);
-                drawLine(-20, 20, 20, 20);
-                drawLine(20, 20, 0, -40);
-                drawLine(0, -40, -20, 20);
+                translate(spikeEnemyPosistionX.get(i), spikeEnemyPosistionY.get(i));
+                drawLine(-20, 19, 20, 19);
+                drawLine(20, 19, 0, -40);
+                drawLine(0, -40, -20, 19);
                 restoreLastTransform();
             }
-        }
-    }
-    public void updateSpikeEnemy(double dt){
-        if(gameLevel == 1) {
-            for (int i = 0; i < maxSpikeEnemy; i++) {
-                spikeEnemyPosistionX[i] -= gameSpeed * dt;
-            }
-        }
-    }
-    //*******************************************************
-    //*******************Ball Bounce Enemy*******************
-    //*******************************************************
-    double[] bounceEnemyPosistionX;
-    double[] bounceEnemyPosistionY;
-    double bounceEnemySpeedY;
-    int maxBounceEnemy;
-    public void initBounceEnemy(){
-        if(gameLevel == 1) {
-            maxBounceEnemy = 5;
-            bounceEnemySpeedY = 100;
-            bounceEnemyPosistionX = new double[10];
-            bounceEnemyPosistionY = new double[10];
-            for (int i = 0; i < maxBounceEnemy; i++) {
-                if (i == 0) {
-                    bounceEnemyPosistionX[i] = 6650;
-                    bounceEnemyPosistionY[i] = 175;
-                } else if (i == 1) {
-                    bounceEnemyPosistionX[i] = 12240;
-                    bounceEnemyPosistionY[i] = 300;
-                } else if (i == 2) {
-                    bounceEnemyPosistionX[i] = 15010;
-                    bounceEnemyPosistionY[i] = 200;
-                } else if (i == 3) {
-                    bounceEnemyPosistionX[i] = 15050;
-                    bounceEnemyPosistionY[i] = 200;
-                } else if (i == 4) {
-                    bounceEnemyPosistionX[i] = 15090;
-                    bounceEnemyPosistionY[i] = 200;
-                }
-            }
-        }else if(gameLevel == 2) {}
-    }
-    public void drawBounceEnemy() {
-        if(gameLevel==1) {
-            for (int i = 0; i < maxBounceEnemy; i++) {
+            for (int i = 0; i < bounceEnemyPosistionX.size(); i++) {
                 changeColor(Color.RED);
-                translate(bounceEnemyPosistionX[i], bounceEnemyPosistionY[i]);
+                translate(bounceEnemyPosistionX.get(i), bounceEnemyPosistionY.get(i));
                 drawSolidCircle(0, 0, 20);
                 restoreLastTransform();
             }
         }
     }
-    public void updateBounceEnemy(double dt){
-        if(gameLevel == 1) {
-            for (int i = 0; i < maxBounceEnemy; i++) {
-                bounceEnemyPosistionX[i] -= gameSpeed * dt;
-               bounceEnemyPosistionY[i] += bounceEnemySpeedY * dt;
+    double bounceEnemySpeedY;
+    public void updateEnemies(double dt) {
+        if (gameLevel == 1) {
+            for (int i = 0; i < spikeEnemyPosistionX.size(); i++) {
+                spikeEnemyPosistionX.set(i, spikeEnemyPosistionX.get(i) - gameSpeed * dt);
+            }
+            for (int i = 0; i < bounceEnemyPosistionX.size(); i++) {
+                bounceEnemyPosistionX.set(i, bounceEnemyPosistionX.get(i) - gameSpeed * dt);
+                bounceEnemyPosistionX.set(i, bounceEnemyPosistionX.get(i) + bounceEnemySpeedY * dt);
                 if (i == 0) {
-                    System.out.println("Bounce PosY: "+bounceEnemyPosistionY[i]);
-                    if (bounceEnemyPosistionY[i] >= 75) {
+                    if (bounceEnemyPosistionY.get(i) >= 75) {
                         bounceEnemySpeedY = bounceEnemySpeedY * -1;
                     }
-                    if (bounceEnemyPosistionY[i] <= 175) {
+                    if (bounceEnemyPosistionY.get(i) <= 175) {
                         bounceEnemySpeedY = bounceEnemySpeedY * -1;
                     }
                 } else if (i == 1) {
-                        if (bounceEnemyPosistionY[i] <= 200) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
-                        if (bounceEnemyPosistionY[i] >= 300) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
-                    } else if (i == 2) {
-                        if (bounceEnemyPosistionY[i] <= 100) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
-                        if (bounceEnemyPosistionY[i] >= 200) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
-                    } else if (i == 3) {
-                        if (bounceEnemyPosistionY[i] <= 100) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
-                        if (bounceEnemyPosistionY[i] >= 200) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
-                    } else if (i == 4) {
-                        if (bounceEnemyPosistionY[i] <= 100) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
-                        if (bounceEnemyPosistionY[i] >= 200) {
-                            bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                        }
+                    if (bounceEnemyPosistionY.get(i) <= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
                     }
+                    if (bounceEnemyPosistionY.get(i) >= 300) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                } else if (i == 2) {
+                    if (bounceEnemyPosistionY.get(i) <= 100) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPosistionY.get(i) >= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                } else if (i == 3) {
+                    if (bounceEnemyPosistionY.get(i) <= 100) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPosistionY.get(i) >= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                } else if (i == 4) {
+                    if (bounceEnemyPosistionY.get(i) <= 100) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPosistionY.get(i) >= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                }
             }
-        }
-    }
-    //*******************************************************
-    //***********************Jump Pad************************
-    //*******************************************************
-    double jumpPadPosistionX, jumpPadPosistionY;
-    public void initJumpPad(){
-        if(gameLevel == 1) {
-            jumpPadPosistionX = 7900;
-            jumpPadPosistionY = 415;
-        }
-    }
-    public void drawJumpPad() {
-        if(gameLevel==1) {
-            changeColor(Color.green);
-            translate(0, 0);
-            drawSolidRectangle(jumpPadPosistionX, jumpPadPosistionY, 30, 2);
-            restoreLastTransform();
-        }
-    }
-    public void updateJumpPad(double dt){
-        if(gameLevel==1) {
-            jumpPadPosistionX -= gameSpeed * dt;
         }
     }
 
@@ -783,20 +711,42 @@ public class Main extends GameEngine {
     public void updateBall(double dt){
         ballPositionY -= ballVelocityY / 50;
         ballPositionX += ballVelocityX / 50;
+        int[] platformcheck = checkBallOnPlatform();
 
-        if (ballVelocityY <= 0) {
-            int height = checkBallOnPlatform();
-            if (height != 0) {doBallOnPlatform(height);}
+        if (ballVelocityY < 0 && platformcheck[1] == 1) {
+            doBallOnPlatform(platformcheck[0]);
         }
-        if (ballPositionX < ballRadius) {
+        if (ballPositionX <= ballRadius) {
             ballPositionX = ballRadius;
+            ballVelocityX = 10;
         }
         if (ballPositionX + ballRadius > width) {
             ballPositionX = width-ballRadius;
+            ballVelocityX = 10;
         }
 
-        if (checkBallOnPlatform()==0) {
-            ballVelocityY -= 10;
+        switch (platformcheck[1]){
+            case 0 -> {jumpReady = false; ballVelocityY -= 10;}
+            case 2 -> { // bottom of platform
+                jumpReady = false;
+                ballPositionY = platformcheck[0] + ballRadius;
+                ballVelocityY = ballVelocityY*(-1.0/2);
+            }
+            case 3 -> { // left of platform
+                jumpReady = false;
+                if (ballPositionX > ballRadius) {
+                    ballPositionX = platformcheck[0] - ballRadius;
+                    ballVelocityX = -200;
+                }
+                else {
+                    state = GameState.GameOver;
+                }
+            }
+            case 4 -> { // jump pad
+                heavy = false;
+                ballColour = white;
+                ballVelocityY = 450 + (Math.abs(ballVelocityY)*1.5/4);
+            }
         }
 
         if (Jump) {
@@ -819,15 +769,32 @@ public class Main extends GameEngine {
         checkCollisions();
     }
 
-    public int checkBallOnPlatform() {
+    public int[] checkBallOnPlatform() {
         if (state == GameState.Play) {
             for (ArrayList<Double> platform : platforms) {
-                if (ballPositionX < platform.get(1) + platform.get(3) && ballPositionX > platform.get(1) && ballPositionY + ballRadius >= platform.get(2)) {
-                    return (platform.get(2).intValue());
+                if (platform.get(0) == 5.0 && platform.get(1) + platform.get(3) >= ballPositionX - ballRadius &&
+                        ballPositionX + ballRadius >= platform.get(1) && platform.get(2) + platform.get(3) >= ballPositionY - ballRadius &&
+                        ballPositionY + ballRadius >= platform.get(2)) {
+                    return new int[]{platform.get(2).intValue(), 4};
+                }
+                // If Ball on top of platform.
+                else if (ballPositionX >= platform.get(1) && ballPositionX - ballRadius <= platform.get(1) + platform.get(3) &&
+                        ballPositionY + ballRadius >= platform.get(2) && ballPositionY < platform.get(2)) {
+                    return new int[]{platform.get(2).intValue(), 1};
+                }
+                else if (ballPositionX >= platform.get(1) && ballPositionX <= platform.get(1) + platform.get(3) &&
+                        ballPositionY - ballRadius <= platform.get(2) + platformHeight && ballPositionY > platform.get(2) + platformHeight) {
+                    ballPositionY++;
+                    return new int[]{platform.get(2).intValue()+platformHeight, 2}; // bottom of platform hit
+                }
+                else if (ballPositionX + ballRadius >= platform.get(1) && ballPositionX < platform.get(1) &&
+                        ballPositionY + ballRadius >= platform.get(2) && ballPositionY - ballRadius <= platform.get(2) + platformHeight) {
+                    ballPositionX--;
+                    return new int[]{platform.get(1).intValue(), 3}; // left of platform hit
                 }
             }
         }
-        return 0;
+        return new int[]{0, 0};
     }
     public void doBallOnPlatform(int platformHeight) {
         if (!jumpReady) {
@@ -848,24 +815,26 @@ public class Main extends GameEngine {
             checkBallonSpikes();
             checkBounceEnemyCollision();
             checkSpikeEnemyCollision();
-            checkJumpPadCollision();
-        }
-    }
-    public void checkJumpPadCollision(){
-        if (distance(ballPositionX,ballPositionY,jumpPadPosistionX,jumpPadPosistionY) <=ballRadius){
-            //insert big jump code here
         }
     }
     public void checkBounceEnemyCollision(){
-        for(int i=0;i<maxBounceEnemy;i++){
-            if(distance(ballPositionX,ballPositionY,bounceEnemyPosistionX[i],bounceEnemyPosistionY[i])<ballRadius){
+        for(int i=0;i<bounceEnemyPosistionX.size();i++){
+            if(distance(ballPositionX,ballPositionY,bounceEnemyPosistionX.get(i),bounceEnemyPosistionY.get(i)) < ballRadius * 2){
                state=GameState.GameOver;
             }
         }
     }
     public void checkSpikeEnemyCollision(){
-        for(int i=0;i<maxSpikeEnemy;i++){
-            if(distance(ballPositionX,ballPositionY,spikeEnemyPosistionX[i],spikeEnemyPosistionY[i])<=ballRadius){
+        for(int i=0;i<spikeEnemyPosistionX.size();i++){
+            AffineTransform t = new AffineTransform();
+            t.translate(spikeEnemyPosistionX.get(i), spikeEnemyPosistionY.get(i));
+            double[] pts = {0, -40, -20, 19, 20, 19, -9.5, -10.5, 9.5, -10.5};
+            t.transform(pts, 0, pts, 0, 5);
+            if (distance(ballPositionX, ballPositionY, pts[0], pts[1]) <= ballRadius ||
+                    distance(ballPositionX, ballPositionY, pts[2], pts[3]) <= ballRadius ||
+                    distance(ballPositionX, ballPositionY, pts[4], pts[5]) <= ballRadius ||
+                    distance(ballPositionX, ballPositionY, pts[6], pts[7]) <= ballRadius ||
+                    distance(ballPositionX, ballPositionY, pts[8], pts[9]) <= ballRadius) {
                 state = GameState.GameOver;
             }
         }
@@ -876,7 +845,7 @@ public class Main extends GameEngine {
         }
     }
     public void checkLevelFinish(){
-        if(ballPositionX >= flagPosistionX-ballRadius){
+        if(ballPositionX - ballRadius >= flagPosistionX){
             state = GameState.LevelComplete;
         }
     }
