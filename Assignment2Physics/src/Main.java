@@ -995,12 +995,16 @@ public class Main extends GameEngine {
     public void checkBounceEnemyCollision(){
         for(int i=0;i<bounceEnemyPosistionX.size();i++){
             if(distance(ballPositionX,ballPositionY,bounceEnemyPosistionX.get(i),bounceEnemyPosistionY.get(i)) < ballRadius * 2){
-                if(lives>0){
-                    ballPositionY = 100;
-                    ballPositionX = 250;
-                    lives--;
-                }else if(lives <= 0) {
-                    state = GameState.GameOver;
+                if(heavy = true){
+                    score++;
+                }else {
+                    if (lives > 0) {
+                        ballPositionY = 100;
+                        ballPositionX = 250;
+                        lives--;
+                    } else if (lives <= 0) {
+                        state = GameState.GameOver;
+                    }
                 }
             }
         }
