@@ -3,7 +3,7 @@
 //Braden Johnston - ID: 20005898
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,17 +18,20 @@ public class Main extends GameEngine {
     //*******************************************************
     // ************************Game**************************
     //*******************************************************
-    enum GameState {Menu, Levels, Play, Exit,GameOver,LevelComplete}
-
+    enum GameState {Menu, Levels, Play, Exit,GameOver,LevelComplete, Instructions, Options}
     GameState state = GameState.Menu;
-    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption;
+    enum Difficulty {Easy, Normal, Hard};
+    Difficulty difficulty = Difficulty.Normal;
+    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption, score,difficultyMenu, livesMenu,livesDifficulity;
+    int lives = -1;
     final int platformHeight = 25;
     double gameSpeed;
-    Scanner platformreader, enemyreader;
+    Scanner platformreader, enemyreader, coinreader;
     public void init() {
         try {
-            platformreader = new Scanner(new File("platformPositions"));
-            enemyreader = new Scanner(new File("enemyPositions"));
+            platformreader = new Scanner(new File("platformPositions.txt"));
+            enemyreader = new Scanner(new File("enemyPositions.txt"));
+            coinreader = new Scanner(new File("coinPositions.txt"));
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -37,11 +40,21 @@ public class Main extends GameEngine {
         exitOption = 0;
         levelMenu = 1;
         levelExit = 0;
-        gameOver =0;
-        gameSpeed = 200;
+        gameOver = 0;
         gameLevel = 1;
         width = 500;
         height = 500;
+        score = 0;
+        livesDifficulity = 0;
+        difficultyMenu = 1; //0 = easy, 1 == normal, 2 == hard
+        livesMenu = 0;//0 = 0 lives, 1 == 3 lives, 2 == 5 lives
+        if (difficulty == Difficulty.Easy){
+            gameSpeed = 150;
+        }else if(difficulty == Difficulty.Normal){
+            gameSpeed = 200;
+        }else if(difficulty == Difficulty.Hard){
+            gameSpeed = 250;
+        }
         initGame();
     }
     public void update(double dt) {
@@ -64,6 +77,10 @@ public class Main extends GameEngine {
             drawGameOver();
         }else if(state == GameState.LevelComplete){
             drawLevelComplete();
+        }else if(state == GameState.Instructions){
+            drawInstructions();
+        }else if(state == GameState.Options){
+           drawOptions();
         }
     }
     public void drawGame(){
@@ -73,6 +90,12 @@ public class Main extends GameEngine {
             drawEnemies();
             drawBall();
             drawFlag();
+            drawCoins();
+            changeColor(Color.BLUE);
+            drawText(10,30, "Score: " + score,30);
+            if(lives>=0){
+                drawText(10,60, "Lives: " + lives,30);
+            }
         }else{
             changeColor(Color.BLUE);
             drawText(100,150, "Next level");
@@ -105,21 +128,39 @@ public class Main extends GameEngine {
         }
         if(menuOption == 2) {
             changeColor(Color.WHITE);
-            drawText(width/2.0-48, 250, "Exit");
+            drawText(width/2.0-100, 250, "Instructions");
             changeColor(Color.blue);
             drawSolidCircle(100,235, 20);
             drawSolidCircle(400,235, 20);
         } else {
             changeColor(Color.darkGray);
-            drawText(width/2.0-48, 250, "Exit");
+            drawText(width/2.0-100, 250, "Instructions");
+        }
+        if(menuOption == 3) {
+            changeColor(Color.WHITE);
+            drawText(width/2.0-75, 300, "Options");
+            changeColor(Color.blue);
+            drawSolidCircle(100,285, 20);
+            drawSolidCircle(400,285, 20);
+        } else {
+            changeColor(Color.darkGray);
+            drawText(width/2.0-75, 300, "Options");
+        }
+        if(menuOption == 4) {
+            changeColor(Color.WHITE);
+            drawText(width/2.0-48, 350, "Exit");
+            changeColor(Color.blue);
+            drawSolidCircle(100,335, 20);
+            drawSolidCircle(400,335, 20);
+        } else {
+            changeColor(Color.darkGray);
+            drawText(width/2.0-48, 350, "Exit");
         }
     }
     public void drawLevels(){
         changeColor(Color.BLUE);
         drawText(width/2.0-55,50, "Levels");
-        if (levelExit == 0){
-            changeColor(Color.darkGray);
-            drawText(200, 400, "Main Menu", 30);
+        drawText(160, 450,"press esc to exit",20);
             if (levelMenu == 1 ){
                 changeColor(Color.WHITE);
                 drawText(200,300,"1",200);
@@ -161,42 +202,34 @@ public class Main extends GameEngine {
                 drawText(90,300,"2",50);
                 drawText(70,300,"1",30);
             }
-        }else if(levelExit == 1){
-            changeColor(Color.white);
-            drawText(200, 400, "Main Menu", 30);
             changeColor(Color.darkGray);
             if (levelMenu == 1 ){
-                drawText(200,300,"1",200);
                 drawText(300,300,"2",100);
                 drawText(360,300,"3",75);
                 drawText(410,300,"4",50);
                 drawText(450,300,"5",30);
             }else if(levelMenu == 2){
-                drawText(200,300,"2",200);
                 drawText(300,300,"3",100);
                 drawText(360,300,"4",75);
                 drawText(410,300,"5",50);
                 drawText(160,300,"1",100);
             } else if(levelMenu == 3){
-                drawText(200,300,"3",200);
                 drawText(300,300,"4",100);
                 drawText(360,300,"5",75);
                 drawText(160,300,"2",100);
                 drawText(120,300,"1",75);
             }else if(levelMenu == 4){
-                drawText(200,300,"4",200);
                 drawText(300,300,"5",100);
                 drawText(150,300,"3",100);
                 drawText(110,300,"2",75);
                 drawText(90,300,"1",50);
             }else if(levelMenu == 5){
-                drawText(200,300,"5",200);
                 drawText(150,300,"4",100);
                 drawText(110,300,"3",75);
                 drawText(90,300,"2",50);
                 drawText(70,300,"1",30);
             }
-        }
+
     }
     public void drawExit(){
         changeColor(Color.BLUE);
@@ -225,30 +258,32 @@ public class Main extends GameEngine {
     public void drawGameOver(){
         changeColor(Color.BLUE);
         drawText(100,150, "Game Over");
+        drawText(100,200,"Score: " + score,30);
         if(gameOver == 0){
             changeColor(Color.WHITE);
-            drawText(100, 300, "Main Menu");
+            drawText(100, 295, "Restart Level",20);
             changeColor(Color.blue);
             drawSolidCircle(80,285,15);
         } else {
             changeColor(Color.darkGray);
-            drawText(100, 300, "Main Menu");
+            drawText(100, 295, "Restart Level",20);
             changeColor(Color.blue);
         }
         if (gameOver == 1) {
             changeColor(Color.WHITE);
-            drawText(400, 300, "Exit");
+            drawText(300, 295, "Main Menu",20);
             changeColor(Color.blue);
-            drawSolidCircle(380,285,15);
+            drawSolidCircle(280,285,15);
         }else{
             changeColor(Color.darkGray);
-            drawText(400, 300, "Exit");
+            drawText(300, 295, "Main Menu",20);
             changeColor(Color.blue);
         }
     }
     public void drawLevelComplete(){
         changeColor(Color.BLUE);
         drawText(50,150, "You Completed Level "+gameLevel+"!");
+        drawText(50,200,"Score: " + score);
         if(levelCompOption == 0){
             changeColor(Color.WHITE);
             drawText(150, 300, "Next Level");
@@ -268,12 +303,82 @@ public class Main extends GameEngine {
             drawText(150, 400, "Main Menu");
         }
     }
+    public void drawInstructions(){
+        changeColor(Color.BLUE);
+        drawText(125,100, "Instructions",50);
+        drawText(175, 450,"press esc to exit",20);
+        changeColor(Color.WHITE);
+        drawText(50,150,"Stay on the platform and reach the finish flag",20);
+        drawText(50,175,"Use the up key to jump",20);
+        drawText(50,200,"Use the down key to become heavy",20);
+        drawText(50,225,"Use the left and right key to move left and right",20);
+        drawText(50,250,"Jump over the red spikes",20);
+        drawText(50,275,"Roll under or jump over the red balls",20);
+        drawText(50,300,"Use the green jump pads to jump higher",20);
+        drawText(50,325,"Collect coins to increase your score",20);
+    }
+    public void drawOptions(){
+        changeColor(Color.BLUE);
+        drawText(160,100, "Options",50);
+        drawText(175, 450,"press esc to exit",20);
+        changeColor(Color.green);
+        drawText(50, 200, "Difficulty:",30);
+        drawText(50, 250, "Lives:",30);
+        if(difficulty == Difficulty.Easy){
+            changeColor(white);
+            drawText(185, 200, "Easy",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(185, 200, "Easy",30);
+        }
+        if(difficulty == Difficulty.Normal){
+            changeColor(white);
+            drawText(275, 200, "Normal",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(275, 200, "Normal",30);
+        }if(difficulty == Difficulty.Hard){
+            changeColor(white);
+            drawText(400, 200, "Hard",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(400, 200, "Hard",30);
+        }
+        if(livesMenu == 0){
+            changeColor(white);
+            drawText(190, 250, "Zero",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(190, 250, "Zero",30);
+        }
+        if(livesMenu == 1){
+            changeColor(white);
+            drawText(280, 250, "Three",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(280, 250, "Three",30);
+        }if(livesMenu == 2){
+            changeColor(white);
+            drawText(405, 250, "Five",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(405, 250, "Five",30);
+        }
+        if(livesDifficulity == 0){
+            changeColor(Color.blue);
+            drawSolidCircle(25,190, 15);
+        }else{
+            changeColor(Color.blue);
+            drawSolidCircle(25,240, 15);
+        }
+    }
     public void initGame(){
         initBall();
         initSpkies();
         initPlatforms();
         initEnemies();
         initFlag();
+        initCoins();
     }
     public void updateGame(double dt){
         updatePlatforms(dt);
@@ -281,6 +386,7 @@ public class Main extends GameEngine {
         updateEnemies(dt);
         updateBall(dt);
         updateFlag(dt);
+        updateCoins(dt);
     }
     //*******************************************************
     //***********************Key Press***********************
@@ -318,7 +424,11 @@ public class Main extends GameEngine {
                     menuOption--;
                 }else if(menuOption == 2){
                     menuOption--;
-                } else if(menuOption == 0){
+                } else if(menuOption == 3){
+                    menuOption--;
+                } else if(menuOption == 4){
+                    menuOption--;
+                }else if(menuOption == 0){
                     menuOption +=2;
                 }
             }
@@ -327,8 +437,12 @@ public class Main extends GameEngine {
                     menuOption++;
                 }else if(menuOption == 1){
                     menuOption++;
-                }else if (menuOption == 2){
-                    menuOption-=2;
+                }else if(menuOption == 2){
+                    menuOption++;
+                }else if(menuOption == 3){
+                    menuOption++;
+                }else if (menuOption == 4){
+                    menuOption-=4;
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -337,50 +451,43 @@ public class Main extends GameEngine {
                     state = GameState.Play;
                 }else if(menuOption == 1){
                     state = GameState.Levels;
+                }else if(menuOption == 2){
+                    state = GameState.Instructions;
+                }else if(menuOption == 3){
+                    state = GameState.Options;
                 }else{
                     state = GameState.Exit;
                 }
             }
         }else if(state == GameState.Levels) {
-            if (e.getKeyCode() == KeyEvent.VK_DOWN){
-                levelExit = 1;
+            if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                state = GameState.Menu;
             }
-            if (e.getKeyCode() == KeyEvent.VK_UP){
-                levelExit = 0;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT && levelExit ==0){
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT){
                 if (levelMenu < 5){
                     levelMenu++;
                 }
             }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT && levelExit ==0){
+            if (e.getKeyCode() == KeyEvent.VK_LEFT){
                 if (levelMenu > 1){
                     levelMenu--;
                 }
             }
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if(levelExit == 1){
-                    state = GameState.Menu;
-                    levelExit =0;
-                }else if (levelMenu == 1){
+                if (levelMenu == 1){
                     gameLevel = 1;
-                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 2){
                     gameLevel = 2;
-                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 3){
                     gameLevel = 3;
-                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 4){
                     gameLevel = 4;
-                    init();
                     state = GameState.Play;
                 }else if (levelMenu == 5){
                     gameLevel = 5;
-                    init();
                     state = GameState.Play;
                 }
             }
@@ -407,9 +514,10 @@ public class Main extends GameEngine {
         }else if (state == GameState.GameOver){
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if(gameOver == 0){
-                    state = GameState.Menu;
+                    init();
+                    state = GameState.Play;
                 }else if(gameOver == 1){
-                    state = GameState.Exit;
+                    state = GameState.Menu;
                     gameOver=0;
                 }
             }
@@ -450,6 +558,72 @@ public class Main extends GameEngine {
                 }else if(levelCompOption == 1){
                     gameLevel++;
                     state = GameState.Menu;
+                }
+            }
+        }else if(state == GameState.Instructions && e.getKeyCode() == KeyEvent.VK_ESCAPE){
+            state = GameState.Menu;
+        }else if(state == GameState.Options){
+            if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                state = GameState.Menu;
+            }
+            if(e.getKeyCode() == KeyEvent.VK_LEFT){
+                if(livesDifficulity == 0) {
+                    if (difficultyMenu == 0) {
+                        difficultyMenu += 2;
+                        difficulty = Difficulty.Hard;
+                    } else if (difficultyMenu == 1) {
+                        difficultyMenu--;
+                        difficulty = Difficulty.Easy;
+                    } else if (difficultyMenu == 2) {
+                        difficultyMenu--;
+                        difficulty = Difficulty.Normal;
+                    }
+                }else if(livesDifficulity == 1){
+                    if(livesMenu == 0){
+                        livesMenu+=2;
+                        lives = 5;
+                    }else if(livesMenu == 1){
+                        livesMenu--;
+                        lives = -1;
+                    }else if(livesMenu == 2){
+                        livesMenu--;
+                        lives = 3;
+                    }
+                }
+            }
+            if(e.getKeyCode() == KeyEvent.VK_RIGHT){
+                if(livesDifficulity == 0) {
+                    if (difficultyMenu == 0) {
+                        difficultyMenu++;
+                        difficulty = Difficulty.Normal;
+                    } else if (difficultyMenu == 1) {
+                        difficultyMenu++;
+                        difficulty = Difficulty.Hard;
+                    } else if (difficultyMenu == 2) {
+                        difficultyMenu -= 2;
+                        difficulty = Difficulty.Easy;
+                    }
+                }else if(livesDifficulity == 1){
+                    if(livesMenu == 0){
+                        livesMenu++;
+                        lives = 3;
+                    }else if(livesMenu == 1){
+                        livesMenu++;
+                        lives = 5;
+                    }else if(livesMenu == 2){
+                        livesMenu-=2;
+                        lives = -1;
+                    }
+                }
+            }
+            if(e.getKeyCode() == KeyEvent.VK_UP){
+                if(livesDifficulity == 1){
+                    livesDifficulity--;
+                }
+            }
+            if(e.getKeyCode() == KeyEvent.VK_DOWN){
+                if(livesDifficulity == 0){
+                    livesDifficulity++;
                 }
             }
         }
@@ -815,12 +989,19 @@ public class Main extends GameEngine {
             checkBallonSpikes();
             checkBounceEnemyCollision();
             checkSpikeEnemyCollision();
+            checkCoinCollision();
         }
     }
     public void checkBounceEnemyCollision(){
         for(int i=0;i<bounceEnemyPosistionX.size();i++){
             if(distance(ballPositionX,ballPositionY,bounceEnemyPosistionX.get(i),bounceEnemyPosistionY.get(i)) < ballRadius * 2){
-               state=GameState.GameOver;
+                if(lives>0){
+                    ballPositionY = 100;
+                    ballPositionX = 250;
+                    lives--;
+                }else if(lives <= 0) {
+                    state = GameState.GameOver;
+                }
             }
         }
     }
@@ -835,18 +1016,39 @@ public class Main extends GameEngine {
                     distance(ballPositionX, ballPositionY, pts[4], pts[5]) <= ballRadius ||
                     distance(ballPositionX, ballPositionY, pts[6], pts[7]) <= ballRadius ||
                     distance(ballPositionX, ballPositionY, pts[8], pts[9]) <= ballRadius) {
-                state = GameState.GameOver;
+                if(lives>0){
+                    ballPositionY = 100;
+                    ballPositionX = 250;
+                    lives--;
+                }else if(lives <= 0) {
+                    state = GameState.GameOver;
+                }
             }
         }
     }
     public void checkBallonSpikes(){
         if (ballPositionY>=height()-65){
-            state = GameState.GameOver;
+            if(lives>0){
+                ballPositionY = 100;
+                ballPositionX = 250;
+                lives--;
+            }else if(lives <= 0) {
+                state = GameState.GameOver;
+            }
         }
     }
     public void checkLevelFinish(){
         if(ballPositionX - ballRadius >= flagPosistionX){
             state = GameState.LevelComplete;
+        }
+    }
+    public void checkCoinCollision(){
+        for(int i=0;i<coinPosistionX.size();i++){
+            if(distance(ballPositionX,ballPositionY,coinPosistionX.get(i),coinPosistionY.get(i)) <= ballRadius*2){
+                coinPosistionX.set(i, coinPosistionX.get(i)*-1);
+                activeCoin[i]= false;
+                score++;
+            }
         }
     }
 
@@ -898,7 +1100,9 @@ public class Main extends GameEngine {
     //*********************Finish Flag***********************
     //*******************************************************
     double flagPosistionX, flagPosistionY;
+    Image flag;
     public void initFlag(){
+        flag = loadImage("flag.png");
         if(gameLevel==1) {
             flagPosistionX = 15950;
             flagPosistionY = 220;
@@ -909,7 +1113,7 @@ public class Main extends GameEngine {
             saveCurrentTransform();
             changeColor(Color.PINK);
             translate(flagPosistionX, flagPosistionY);
-            drawLine(0, 0, 0, 100);
+            drawImage(flag,0,0,50,100);
             restoreLastTransform();
         }
     }
@@ -918,4 +1122,54 @@ public class Main extends GameEngine {
             flagPosistionX -= gameSpeed * dt;
         }
     }
+    //*******************************************************
+    //************************Coins**************************
+    //*******************************************************
+    ArrayList<Double> coinPosistionX, coinPosistionY;
+    boolean[] activeCoin;
+
+    Image coin;
+    public void initCoins(){
+
+        activeCoin = new boolean[5];
+        coin = loadImage("coin.png");
+        coinPosistionX = new ArrayList<>();
+        coinPosistionY = new ArrayList<>();
+
+        if(gameLevel == 1) {
+            while (coinreader.hasNext()) {
+                currentLine = coinreader.nextLine().split(",");
+                switch (currentLine[0]) {
+                    case "0" -> {
+                        coinPosistionX.add(Double.parseDouble(currentLine[1]));
+                        coinPosistionY.add(Double.parseDouble(currentLine[2]));
+                    }
+                }
+            }
+            for (int i = 0; i < coinPosistionX.size(); i++) {
+                activeCoin[i] = true;
+            }
+        }else if(gameLevel==2){}
+    }
+    public void drawCoins() {
+        if(gameLevel==1) {
+            for (int i = 0; i < coinPosistionX.size(); i++) {
+                if(activeCoin[i]==true) {
+                    translate(coinPosistionX.get(i), coinPosistionY.get(i));
+                    drawImage(coin, 0, 0, 20, 20);
+                    restoreLastTransform();
+                }
+            }
+        }
+    }
+    public void updateCoins(double dt) {
+        if (gameLevel == 1) {
+            for (int i = 0; i < coinPosistionX.size(); i++) {
+                if(activeCoin[i]==true) {
+                    coinPosistionX.set(i, coinPosistionX.get(i) - gameSpeed * dt);
+                }
+            }
+        }
+    }
 }
+
