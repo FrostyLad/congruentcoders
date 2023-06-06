@@ -109,7 +109,8 @@ public class Main extends GameEngine {
         if(menuOption == 0) {
             changeColor(Color.WHITE);
             drawText(width/2.0 -50, 150, "Play");
-            changeColor(Color.blue);
+            changeColor(8, 131, 149);
+         //   changeColor(Color.blue);
             drawSolidCircle(100,135, 20);
             drawSolidCircle(400,135, 20);
         } else {
@@ -429,7 +430,7 @@ public class Main extends GameEngine {
                 } else if(menuOption == 4){
                     menuOption--;
                 }else if(menuOption == 0){
-                    menuOption +=2;
+                    menuOption +=4;
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -812,7 +813,7 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPosistionX.size(); i++) {
                 bounceEnemyPosistionX.set(i, bounceEnemyPosistionX.get(i) - gameSpeed * dt);
-                bounceEnemyPosistionX.set(i, bounceEnemyPosistionX.get(i) + bounceEnemySpeedY * dt);
+                bounceEnemyPosistionY.set(i, bounceEnemyPosistionY.get(i) + bounceEnemySpeedY * dt);
                 if (i == 0) {
                     if (bounceEnemyPosistionY.get(i) >= 75) {
                         bounceEnemySpeedY = bounceEnemySpeedY * -1;
