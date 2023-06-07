@@ -22,19 +22,11 @@ public class Main extends GameEngine {
     GameState state = GameState.Menu;
     enum Difficulty {Easy, Normal, Hard};
     Difficulty difficulty = Difficulty.Normal;
-    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption, score,difficultyMenu, livesMenu,livesDifficulity;
-    int lives = -1;
+    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption, score,difficultyMenu, livesMenu,livesDifficulity, gameLives, lives;
     final int platformHeight = 25;
     double gameSpeed;
-    Scanner platformreader, enemyreader, coinreader;
+    Scanner platformreader, platformread, enemyreader, enemyread,  coinreader, coinread;
     public void init() {
-        try {
-            platformreader = new Scanner(new File("platformPositions.txt"));
-            enemyreader = new Scanner(new File("enemyPositions.txt"));
-            coinreader = new Scanner(new File("coinPositions.txt"));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
         levelCompOption = 0;
         menuOption = 0;
         exitOption = 0;
@@ -44,10 +36,10 @@ public class Main extends GameEngine {
         gameLevel = 1;
         width = 500;
         height = 500;
-        score = 0;
         livesDifficulity = 0;
         difficultyMenu = 1; //0 = easy, 1 == normal, 2 == hard
         livesMenu = 0;//0 = 0 lives, 1 == 3 lives, 2 == 5 lives
+        gameLives = -1;
         if (difficulty == Difficulty.Easy){
             gameSpeed = 150;
         }else if(difficulty == Difficulty.Normal){
@@ -55,7 +47,6 @@ public class Main extends GameEngine {
         }else if(difficulty == Difficulty.Hard){
             gameSpeed = 250;
         }
-        initGame();
     }
     public void update(double dt) {
         if (state == GameState.Play) {
@@ -63,7 +54,6 @@ public class Main extends GameEngine {
         }
     }
     public void paintComponent() {
-        //changeBackgroundColor(black);
         changeBackgroundColor(208,245,190);
         clearBackground(width, height);
         if(state == GameState.Menu) {
@@ -71,6 +61,7 @@ public class Main extends GameEngine {
         }else if(state == GameState.Levels) {
             drawLevels();
         }else if(state == GameState.Play) {
+            // backgrounds go here
             drawGame();
         }else if(state == GameState.Exit){
             drawExit();
@@ -95,14 +86,14 @@ public class Main extends GameEngine {
             //changeColor(Color.BLUE);
             changeColor(10,77,104);
             drawText(10,30, "Score: " + score,30);
-            if(lives>=0){
+            if(gameLives>=0){
                 drawText(10,60, "Lives: " + lives,30);
             }
         }else{
             changeColor(Color.BLUE);
             drawText(100,150, "Next level");
             drawText(100,200, "Still to Come!");
-            drawText(100,250,"Press ESC to go to main menu",20);
+            drawText(100,250,"Press Enter to go to main menu",20);
         }
     }
     public void drawMenu(){
@@ -174,7 +165,7 @@ public class Main extends GameEngine {
         //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(width/2.0-95,75, "Levels",75);
-        drawText(160, 450,"press esc to exit",20);
+        drawText(160, 450,"press Escape to exit",20);
             if (levelMenu == 1 ){
                 //changeColor(Color.WHITE);
                 changeColor(5,191,219);
@@ -339,7 +330,7 @@ public class Main extends GameEngine {
         //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(125,100, "Instructions",50);
-        drawText(175, 450,"press esc to exit",20);
+        drawText(175, 450,"press Enter to exit",20);
         //changeColor(Color.WHITE);
         changeColor(5,191,219);
         drawText(50,150,"Stay on the platform and reach the finish flag",20);
@@ -355,7 +346,7 @@ public class Main extends GameEngine {
         //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(135,100, "Options",75);
-        drawText(175, 450,"press esc to exit",20);
+        drawText(175, 450,"press Enter to exit",20);
         //changeColor(Color.green);
         changeColor(121,224,238);
         drawText(50, 200, "Difficulty:",30);
@@ -417,6 +408,8 @@ public class Main extends GameEngine {
         }
     }
     public void initGame(){
+        score = 0;
+        lives = gameLives;
         initBall();
         initSpkies();
         initPlatforms();
@@ -491,7 +484,7 @@ public class Main extends GameEngine {
             }
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if(menuOption == 0){
-                    init();
+                    initGame();
                     state = GameState.Play;
                 }else if(menuOption == 1){
                     state = GameState.Levels;
@@ -518,6 +511,7 @@ public class Main extends GameEngine {
                 }
             }
             if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+                initGame();
                 if (levelMenu == 1){
                     gameLevel = 1;
                     state = GameState.Play;
@@ -558,7 +552,7 @@ public class Main extends GameEngine {
         }else if (state == GameState.GameOver){
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if(gameOver == 0){
-                    init();
+                    initGame();
                     state = GameState.Play;
                 }else if(gameOver == 1){
                     state = GameState.Menu;
@@ -604,14 +598,15 @@ public class Main extends GameEngine {
                     state = GameState.Menu;
                 }
             }
-        }else if(state == GameState.Instructions && e.getKeyCode() == KeyEvent.VK_ESCAPE){
+        }else if(state == GameState.Instructions && e.getKeyCode() == KeyEvent.VK_ENTER){
             state = GameState.Menu;
-        }else if(state == GameState.Options){
-            if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        }else if(state == GameState.Options) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                lives = gameLives;
                 state = GameState.Menu;
             }
-            if(e.getKeyCode() == KeyEvent.VK_LEFT){
-                if(livesDifficulity == 0) {
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                if (livesDifficulity == 0) {
                     if (difficultyMenu == 0) {
                         difficultyMenu += 2;
                         difficulty = Difficulty.Hard;
@@ -622,19 +617,20 @@ public class Main extends GameEngine {
                         difficultyMenu--;
                         difficulty = Difficulty.Normal;
                     }
-                }else if(livesDifficulity == 1){
-                    if(livesMenu == 0){
-                        livesMenu+=2;
-                        lives = 5;
-                    }else if(livesMenu == 1){
+                } else if (livesDifficulity == 1) {
+                    if (livesMenu == 0) {
+                        livesMenu += 2;
+                        gameLives = 5;
+                    } else if (livesMenu == 1) {
                         livesMenu--;
-                        lives = -1;
-                    }else if(livesMenu == 2){
+                        gameLives = -1;
+                    } else if (livesMenu == 2) {
                         livesMenu--;
-                        lives = 3;
+                        gameLives = 3;
                     }
                 }
             }
+        }
             if(e.getKeyCode() == KeyEvent.VK_RIGHT){
                 if(livesDifficulity == 0) {
                     if (difficultyMenu == 0) {
@@ -650,13 +646,13 @@ public class Main extends GameEngine {
                 }else if(livesDifficulity == 1){
                     if(livesMenu == 0){
                         livesMenu++;
-                        lives = 3;
+                        gameLives = 3;
                     }else if(livesMenu == 1){
                         livesMenu++;
-                        lives = 5;
+                        gameLives = 5;
                     }else if(livesMenu == 2){
                         livesMenu-=2;
-                        lives = -1;
+                        gameLives = -1;
                     }
                 }
             }
@@ -671,7 +667,6 @@ public class Main extends GameEngine {
                 }
             }
         }
-    }
     public void keyReleased(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             Jump = false;
@@ -690,6 +685,11 @@ public class Main extends GameEngine {
     String[] currentLine;
     Image jumpPad;
     public void initPlatforms(){
+        try {
+            platformread = new Scanner(new File("platformPositions.txt"));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         jumpPad = loadImage("jumppad.png");
         jumpPadPositionX = new ArrayList<>();
         jumpPadPositionY = new ArrayList<>();
@@ -704,8 +704,8 @@ public class Main extends GameEngine {
         platformVertPositionX = new ArrayList<>();
         platformVertPositionY = new ArrayList<>();
         if(gameLevel == 1) {
-            while (platformreader.hasNext()) {
-                currentLine = platformreader.nextLine().split(",");
+            while (platformread.hasNext()) {
+                currentLine = platformread.nextLine().split(",");
                 switch (currentLine[0]) {
                     case "0" -> {
                         platformXSmallPositionX.add(Double.parseDouble(currentLine[1]));
@@ -820,8 +820,13 @@ public class Main extends GameEngine {
         bounceEnemyPosistionY = new ArrayList<>();
 
         if(gameLevel == 1) {
-            while (enemyreader.hasNext()) {
-                currentLine = enemyreader.nextLine().split(",");
+            try {
+                enemyread = new Scanner(new File("enemyPositions.txt"));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            while (enemyread.hasNext()) {
+                currentLine = enemyread.nextLine().split(",");
                 switch (currentLine[0]) {
                     case "0" -> {
                         spikeEnemyPosistionX.add(Double.parseDouble(currentLine[1]));
@@ -1092,7 +1097,7 @@ public class Main extends GameEngine {
                 ballPositionY = 100;
                 ballPositionX = 250;
                 lives--;
-            }else if(lives <= 0) {
+            }else {
                 state = GameState.GameOver;
             }
         }
@@ -1200,8 +1205,13 @@ public class Main extends GameEngine {
         coinPosistionY = new ArrayList<>();
 
         if(gameLevel == 1) {
-            while (coinreader.hasNext()) {
-                currentLine = coinreader.nextLine().split(",");
+            try {
+                coinread = new Scanner(new File("coinPositions.txt"));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            while (coinread.hasNext()) {
+                currentLine = coinread.nextLine().split(",");
                 switch (currentLine[0]) {
                     case "0" -> {
                         coinPosistionX.add(Double.parseDouble(currentLine[1]));
