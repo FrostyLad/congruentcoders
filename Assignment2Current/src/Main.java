@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class Main extends GameEngine {
     public static void main(String[] args) {
-        createGame(new Main(), 30);
+        createGame(new Main(), 150);
     }
     //*******************************************************
     // ************************Game**************************
@@ -47,7 +47,9 @@ public class Main extends GameEngine {
             gameSpeed = 250;
         }
     }
+
     public void update(double dt) {
+
         if (state == GameState.Play) {
             updateGame(dt);
         }
@@ -702,7 +704,7 @@ public class Main extends GameEngine {
     public void updatePlatforms(double dt) {
         platforms = new ArrayList<>();
         changeColor(white);
-        doUpdate(dt, jumpPadPositionX, jumpPadPositionY, 5, 30,20);
+        doUpdate(dt, jumpPadPositionX, jumpPadPositionY, 5, 30,30);
         doUpdate(dt, platformXSmallPositionX, platformXSmallPositionY, 0, 100,25);
         doUpdate(dt, platformSmallPositionX, platformSmallPositionY, 1, 200,25);
         doUpdate(dt, platformMedPositionX, platformMedPositionY, 2, 400,25);
@@ -903,7 +905,7 @@ public class Main extends GameEngine {
     //*******************************************************
 
     boolean Jump, jumpReady, heavy;
-    int jumpCount, ballRadius;
+    int jumpCount, ballRadius, canJumpPad;
     double ballPositionX, ballPositionY, ballVelocityX, ballVelocityY;
     Color ballColour;
 
@@ -918,6 +920,7 @@ public class Main extends GameEngine {
         ballVelocityX = 10;
         ballVelocityY = 0;
         ballColour = white;
+        canJumpPad = 0;
 
     }
     public void drawBall() {
@@ -945,7 +948,10 @@ public class Main extends GameEngine {
         }
 
         switch (platformcheck[1]){
-            case 0 -> {jumpReady = false; ballVelocityY -= 10;}
+            case 0 -> {
+                jumpReady = false;
+                ballVelocityY -= 6;
+            }
             case 2 -> { // bottom of platform
                 jumpReady = false;
                 ballPositionY = platformcheck[0] + ballRadius;
@@ -968,13 +974,24 @@ public class Main extends GameEngine {
             case 4 -> { // jump pad
                 heavy = false;
                 ballColour = white;
-                ballVelocityY = 450 + (Math.abs(ballVelocityY)*1.5/4);
+                if (canJumpPad == 0) {
+                    Jump = false;
+                    jumpReady = false;
+                    canJumpPad++;
+                    ballVelocityY = 325 + (ballVelocityY/2);
+                }
+                else {
+                    canJumpPad++;
+                    if (canJumpPad >=20){
+                        canJumpPad = 0;
+                    }
+                }
             }
         }
 
         if (Jump) {
             jumpCount++;
-            ballVelocityY += (dt * 2500) / ((double) jumpCount);
+            ballVelocityY += (dt * 3000) / ((double) jumpCount/1.8);
             if (jumpCount >= 20) {
                 Jump = false;
                 jumpReady = false;
@@ -996,8 +1013,8 @@ public class Main extends GameEngine {
         if (state == GameState.Play) {
             for (ArrayList<Double> platform : platforms) {
                 if (platform.get(0) == 5.0 && platform.get(1) + platform.get(3) >= ballPositionX - ballRadius &&
-                        ballPositionX + ballRadius >= platform.get(1) && platform.get(2) + platform.get(3) >= ballPositionY - ballRadius &&
-                        ballPositionY + ballRadius >= platform.get(2)) {
+                        ballPositionX + ballRadius >= platform.get(1) && platform.get(2) + platform.get(4) >= ballPositionY - ballRadius &&
+                        ballPositionY + ballRadius >= platform.get(2)-10) {
                     return new int[]{platform.get(2).intValue(), 4};
                 }
                 // If Ball on top of platform.
