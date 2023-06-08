@@ -83,7 +83,6 @@ public class Main extends GameEngine {
             drawBall();
             drawFlag();
             drawCoins();
-            //changeColor(Color.BLUE);
             changeColor(10,77,104);
             drawText(10,30, "Score: " + score,30);
             if(gameLives>=0){
@@ -97,15 +96,12 @@ public class Main extends GameEngine {
         }
     }
     public void drawMenu(){
-        // changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(width/2.0-90,75, "Menu",75);
         if(menuOption == 0) {
-            // changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(width/2.0 -50, 150, "Play");
             changeColor(8, 131, 149);
-            //   changeColor(Color.blue);
             drawSolidCircle(100,135, 20);
             drawSolidCircle(400,135, 20);
         } else {
@@ -113,10 +109,8 @@ public class Main extends GameEngine {
             drawText(width/2.0-50, 150, "Play");
         }
         if(menuOption == 1) {
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(width/2.0-65, 200, "Levels");
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(100,185, 20);
             drawSolidCircle(400,185, 20);
@@ -125,10 +119,8 @@ public class Main extends GameEngine {
             drawText(width/2.0-65, 200, "Levels");
         }
         if(menuOption == 2) {
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(width/2.0-100, 250, "Instructions");
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(100,235, 20);
             drawSolidCircle(400,235, 20);
@@ -137,10 +129,8 @@ public class Main extends GameEngine {
             drawText(width/2.0-100, 250, "Instructions");
         }
         if(menuOption == 3) {
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(width/2.0-75, 300, "Options");
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(100,285, 20);
             drawSolidCircle(400,285, 20);
@@ -149,10 +139,8 @@ public class Main extends GameEngine {
             drawText(width/2.0-75, 300, "Options");
         }
         if(menuOption == 4) {
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(width/2.0-48, 350, "Exit");
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(100,335, 20);
             drawSolidCircle(400,335, 20);
@@ -162,12 +150,10 @@ public class Main extends GameEngine {
         }
     }
     public void drawLevels(){
-        //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(width/2.0-95,75, "Levels",75);
         drawText(160, 450,"press Escape to exit",20);
         if (levelMenu == 1 ){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(200,300,"1",200);
             changeColor(Color.darkGray);
@@ -176,7 +162,6 @@ public class Main extends GameEngine {
             drawText(410,300,"4",50);
             drawText(450,300,"5",30);
         }else if(levelMenu == 2){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(200,300,"2",200);
             changeColor(Color.darkGray);
@@ -185,7 +170,6 @@ public class Main extends GameEngine {
             drawText(410,300,"5",50);
             drawText(160,300,"1",100);
         } else if(levelMenu == 3){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(200,300,"3",200);
             changeColor(Color.darkGray);
@@ -194,7 +178,6 @@ public class Main extends GameEngine {
             drawText(160,300,"2",100);
             drawText(120,300,"1",75);
         }else if(levelMenu == 4){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(200,300,"4",200);
             changeColor(Color.darkGray);
@@ -203,7 +186,6 @@ public class Main extends GameEngine {
             drawText(110,300,"2",75);
             drawText(90,300,"1",50);
         }else if(levelMenu == 5){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(200,300,"5",200);
             changeColor(Color.darkGray);
@@ -242,14 +224,11 @@ public class Main extends GameEngine {
 
     }
     public void drawExit(){
-        //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(90,150, "Do you want to exit?");
         if(exitOption == 0){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(100, 300, "No");
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(80,285,15);
         } else {
@@ -258,10 +237,8 @@ public class Main extends GameEngine {
             changeColor(Color.blue);
         }
         if (exitOption == 1) {
-            // changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(350, 300, "Yes");
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(330,285,15);
         }else{
@@ -270,15 +247,14 @@ public class Main extends GameEngine {
         }
     }
     public void drawGameOver(){
-        //changeColor(Color.BLUE);
         changeColor(10,77,104);
-        drawText(100,150, "Game Over");
-        drawText(100,200,"Score: " + score,30);
+        drawText(50,100, "Game Over",75);
+        drawText(100,180,"Score: " + score,30);
+        drawText(100,230,"You can change the game difficulty",15);
+        drawText(100,250," and lives amount in options",15);
         if(gameOver == 0){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(100, 295, "Restart Level",20);
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(80,285,15);
         } else {
@@ -287,10 +263,8 @@ public class Main extends GameEngine {
             changeColor(Color.blue);
         }
         if (gameOver == 1) {
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(300, 295, "Main Menu",20);
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(280,285,15);
         }else{
@@ -299,12 +273,10 @@ public class Main extends GameEngine {
         }
     }
     public void drawLevelComplete(){
-        //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(50,150, "You Completed Level "+gameLevel+"!");
         drawText(50,200,"Score: " + score);
         if(levelCompOption == 0){
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(150, 300, "Next Level");
             //changeColor(Color.blue);
@@ -315,7 +287,6 @@ public class Main extends GameEngine {
             drawText(150, 300, "Next Level");
         }
         if (levelCompOption == 1) {
-            //changeColor(Color.WHITE);
             changeColor(5,191,219);
             drawText(150, 400, "Main Menu");
             //changeColor(Color.blue);
@@ -327,11 +298,9 @@ public class Main extends GameEngine {
         }
     }
     public void drawInstructions(){
-        //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(125,100, "Instructions",50);
         drawText(175, 450,"press Enter to exit",20);
-        //changeColor(Color.WHITE);
         changeColor(5,191,219);
         drawText(50,150,"Stay on the platform and reach the finish flag",20);
         drawText(50,175,"Use the up key to jump",20);
@@ -343,16 +312,13 @@ public class Main extends GameEngine {
         drawText(50,325,"Collect coins to increase your score",20);
     }
     public void drawOptions(){
-        //changeColor(Color.BLUE);
         changeColor(10,77,104);
         drawText(135,100, "Options",75);
         drawText(175, 450,"press Enter to exit",20);
-        //changeColor(Color.green);
         changeColor(121,224,238);
         drawText(50, 200, "Difficulty:",30);
         drawText(50, 250, "Lives:",30);
         if(difficulty == Difficulty.Easy){
-            //changeColor(white);
             changeColor(5,191,219);
             drawText(185, 200, "Easy",30);
         }else{
@@ -360,14 +326,12 @@ public class Main extends GameEngine {
             drawText(185, 200, "Easy",30);
         }
         if(difficulty == Difficulty.Normal){
-            //changeColor(white);
             changeColor(5,191,219);
             drawText(275, 200, "Normal",30);
         }else{
             changeColor(Color.darkGray);
             drawText(275, 200, "Normal",30);
         }if(difficulty == Difficulty.Hard){
-            //changeColor(white);
             changeColor(5,191,219);
             drawText(400, 200, "Hard",30);
         }else{
@@ -375,7 +339,6 @@ public class Main extends GameEngine {
             drawText(400, 200, "Hard",30);
         }
         if(livesMenu == 0){
-            //changeColor(white);
             changeColor(5,191,219);
             drawText(190, 250, "Zero",30);
         }else{
@@ -383,14 +346,12 @@ public class Main extends GameEngine {
             drawText(190, 250, "Zero",30);
         }
         if(livesMenu == 1){
-            //changeColor(white);
             changeColor(5,191,219);
             drawText(280, 250, "Three",30);
         }else{
             changeColor(Color.darkGray);
             drawText(280, 250, "Three",30);
         }if(livesMenu == 2){
-            //changeColor(white);
             changeColor(5,191,219);
             drawText(405, 250, "Five",30);
         }else{
@@ -398,11 +359,9 @@ public class Main extends GameEngine {
             drawText(405, 250, "Five",30);
         }
         if(livesDifficulity == 0){
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(25,190, 15);
         }else{
-            //changeColor(Color.blue);
             changeColor(8, 131, 149);
             drawSolidCircle(25,240, 15);
         }
@@ -637,40 +596,40 @@ public class Main extends GameEngine {
                     }
                 }
             }
-        }
-        if(e.getKeyCode() == KeyEvent.VK_RIGHT){
-            if(livesDifficulity == 0) {
-                if (difficultyMenu == 0) {
-                    difficultyMenu++;
-                    difficulty = Difficulty.Normal;
-                } else if (difficultyMenu == 1) {
-                    difficultyMenu++;
-                    difficulty = Difficulty.Hard;
-                } else if (difficultyMenu == 2) {
-                    difficultyMenu -= 2;
-                    difficulty = Difficulty.Easy;
-                }
-            }else if(livesDifficulity == 1){
-                if(livesMenu == 0){
-                    livesMenu++;
-                    gameLives = 3;
-                }else if(livesMenu == 1){
-                    livesMenu++;
-                    gameLives = 5;
-                }else if(livesMenu == 2){
-                    livesMenu-=2;
-                    gameLives = -1;
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                if (livesDifficulity == 0) {
+                    if (difficultyMenu == 0) {
+                        difficultyMenu++;
+                        difficulty = Difficulty.Normal;
+                    } else if (difficultyMenu == 1) {
+                        difficultyMenu++;
+                        difficulty = Difficulty.Hard;
+                    } else if (difficultyMenu == 2) {
+                        difficultyMenu -= 2;
+                        difficulty = Difficulty.Easy;
+                    }
+                } else if (livesDifficulity == 1) {
+                    if (livesMenu == 0) {
+                        livesMenu++;
+                        gameLives = 3;
+                    } else if (livesMenu == 1) {
+                        livesMenu++;
+                        gameLives = 5;
+                    } else if (livesMenu == 2) {
+                        livesMenu -= 2;
+                        gameLives = -1;
+                    }
                 }
             }
-        }
-        if(e.getKeyCode() == KeyEvent.VK_UP){
-            if(livesDifficulity == 1){
-                livesDifficulity--;
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                if (livesDifficulity == 1) {
+                    livesDifficulity--;
+                }
             }
-        }
-        if(e.getKeyCode() == KeyEvent.VK_DOWN){
-            if(livesDifficulity == 0){
-                livesDifficulity++;
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                if (livesDifficulity == 0) {
+                    livesDifficulity++;
+                }
             }
         }
     }
@@ -818,14 +777,19 @@ public class Main extends GameEngine {
     //*******************************************************
     //***********************Enemies*************************
     //*******************************************************
-    ArrayList<Double> spikeEnemyPosistionX, spikeEnemyPosistionY, bounceEnemyPosistionX, bounceEnemyPosistionY;
+    ArrayList<Double> spikeEnemyPosistionX;
+    ArrayList<Double> spikeEnemyPosistionY;
+    ArrayList<Double> bounceEnemyPosistionX;
+    ArrayList<Double> bounceEnemyPosistionY;
     Image spikeEnemy;
+    boolean[] bounceEnemyActive;
     public void initEnemies(){
         spikeEnemy = loadImage("spikeenemy.png");
         spikeEnemyPosistionX = new ArrayList<>();
         spikeEnemyPosistionY = new ArrayList<>();
         bounceEnemyPosistionX = new ArrayList<>();
         bounceEnemyPosistionY = new ArrayList<>();
+        bounceEnemyActive = new boolean[10];
 
         if(gameLevel == 1) {
             try {
@@ -846,6 +810,9 @@ public class Main extends GameEngine {
                     }
                 }
             }
+            for (int i = 0; i < bounceEnemyPosistionX.size(); i++) {
+                bounceEnemyActive[i] = true;
+            }
         }else if(gameLevel==2){}
     }
     public void drawEnemies() {
@@ -856,10 +823,12 @@ public class Main extends GameEngine {
                 restoreLastTransform();
             }
             for (int i = 0; i < bounceEnemyPosistionX.size(); i++) {
-                changeColor(Color.RED);
-                translate(bounceEnemyPosistionX.get(i), bounceEnemyPosistionY.get(i));
-                drawSolidCircle(0, 0, 20);
-                restoreLastTransform();
+                if(bounceEnemyActive[i]) {
+                    changeColor(Color.RED);
+                    translate(bounceEnemyPosistionX.get(i), bounceEnemyPosistionY.get(i));
+                    drawSolidCircle(0, 0, 20);
+                    restoreLastTransform();
+                }
             }
         }
     }
@@ -872,6 +841,7 @@ public class Main extends GameEngine {
             for (int i = 0; i < bounceEnemyPosistionX.size(); i++) {
                 bounceEnemyPosistionX.set(i, bounceEnemyPosistionX.get(i) - gameSpeed * dt);
                 bounceEnemyPosistionY.set(i, bounceEnemyPosistionY.get(i) + bounceEnemySpeedY * dt);
+                // Ball isn't bouncing?
                 if (i == 0) {
                     if (bounceEnemyPosistionY.get(i) >= 75) {
                         bounceEnemySpeedY = bounceEnemySpeedY * -1;
@@ -974,7 +944,6 @@ public class Main extends GameEngine {
                 else {
                     if (lives > 0) {
                         respawnBall();
-                        lives--;
                     } else if (lives <= 0) {
                         state = GameState.GameOver;
                     }
@@ -1060,11 +1029,12 @@ public class Main extends GameEngine {
         for(int i=0;i<bounceEnemyPosistionX.size();i++){
             if(distance(ballPositionX,ballPositionY,bounceEnemyPosistionX.get(i),bounceEnemyPosistionY.get(i)) < ballRadius * 2){
                 if(heavy){
+                    bounceEnemyPosistionX.set(i, bounceEnemyPosistionX.get(i)*-1);
+                    bounceEnemyActive[i] = false;
                     score++;
                 }else {
                     if (lives > 0) {
                         respawnBall();
-                        lives--;
                     } else if (lives <= 0) {
                         state = GameState.GameOver;
                     }
@@ -1085,7 +1055,6 @@ public class Main extends GameEngine {
                     distance(ballPositionX, ballPositionY, pts[8], pts[9]) <= ballRadius) {
                 if(lives>0){
                     respawnBall();
-                    lives--;
                 }else if(lives <= 0) {
                     state = GameState.GameOver;
                 }
@@ -1117,7 +1086,6 @@ public class Main extends GameEngine {
     }
     public void respawnBall(){
         boolean breaking = false;
-        lives--;
         ballVelocityX = 10;
         for (ArrayList<Double> platform : platforms) {
             for (int i =200; i<=300;i++) {
@@ -1129,8 +1097,10 @@ public class Main extends GameEngine {
                     ballPositionY = platform.get(2)-ballRadius;
                     jumpReady= true;
                     breaking = true;
+                    lives--;
                     break;
                 }
+                //Need to add if statement for if the ball respawns same place as ememies
                 if(breaking) {
                     break;
                 }
