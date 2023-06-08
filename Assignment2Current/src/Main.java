@@ -1186,15 +1186,20 @@ public class Main extends GameEngine {
     //*******************************************************
     ArrayList<Double> coinPosistionX, coinPosistionY;
     boolean[] activeCoin;
-
-    Image coin;
+    Image coinSpriteSheet;
+    ArrayList<Image> coinFrames;
     public void initCoins(){
-
+        coinFrames = new ArrayList<>();
         activeCoin = new boolean[5];
-        coin = loadImage("coin.png");
+        //coin = loadImage("coin.png");
+        coinSpriteSheet = loadImage("coinspritesheet.png");
         coinPosistionX = new ArrayList<>();
         coinPosistionY = new ArrayList<>();
-
+        for(int y=0; y<2; y++){
+            for (int x=0;x<3;x++) {
+                coinFrames.add(subImage(coinSpriteSheet,x*200,y*200,200,200));
+            }
+        }
         if(gameLevel == 1) {
             try {
                 coinread = new Scanner(new File("coinPositions.txt"));
@@ -1215,16 +1220,22 @@ public class Main extends GameEngine {
             }
         }else if(gameLevel==2){}
     }
+    int count = 0;
     public void drawCoins() {
-        if(gameLevel==1) {
+         if(gameLevel==1) {
             for (int i = 0; i < coinPosistionX.size(); i++) {
                 if(activeCoin[i]==true) {
-                    translate(coinPosistionX.get(i), coinPosistionY.get(i));
-                    drawImage(coin, 0, 0, 20, 20);
-                    restoreLastTransform();
+                 translate(coinPosistionX.get(i), coinPosistionY.get(i));
+                 drawImage(coinFrames.get(count), 0, 0, 20, 20);
+                 restoreLastTransform();
                 }
             }
         }
+         if(count<5) {
+             count++;
+         }else{
+             count = 0;
+         }
     }
     public void updateCoins(double dt) {
         if (gameLevel == 1) {
