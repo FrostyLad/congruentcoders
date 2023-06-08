@@ -941,14 +941,14 @@ public class Main extends GameEngine {
     public void drawBall() {
         //changeColor(ballColour);
         saveCurrentTransform();
-        rotate(ballAngle);
         translate(ballPositionX,ballPositionY);
+        rotate(ballAngle);
         drawImage(ballImage, -ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
         //drawSolidCircle(ballPositionX, ballPositionY , ballRadius);
         restoreLastTransform();
     }
     public void updateBall(double dt){
-        //ballAngle += 30*dt;
+        ballAngle += 250*dt;
         ballPositionY -= ballVelocityY / 50;
         ballPositionX += ballVelocityX / 50;
         int[] platformcheck = checkBallOnPlatform();
