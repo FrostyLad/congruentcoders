@@ -733,6 +733,8 @@ public class Main extends GameEngine {
             saveCurrentTransform();
             translate(0, 0);
             drawSolidRectangle(platformXSmallPositionX.get(i), platformXSmallPositionY.get(i), 100, 25);
+            changeColor(black);
+            drawRectangle(platformXSmallPositionX.get(i), platformXSmallPositionY.get(i), 100, 25);
             restoreLastTransform();
         }
         for(int i=0; i<platformSmallPositionX.size(); i++) {
@@ -740,6 +742,8 @@ public class Main extends GameEngine {
             saveCurrentTransform();
             translate(0, 0);
             drawSolidRectangle(platformSmallPositionX.get(i), platformSmallPositionY.get(i), 200, 25);
+            changeColor(black);
+            drawRectangle(platformSmallPositionX.get(i), platformSmallPositionY.get(i), 200, 25);
             restoreLastTransform();
         }
         for(int i=0; i<platformMedPositionX.size(); i++) {
@@ -747,6 +751,8 @@ public class Main extends GameEngine {
             saveCurrentTransform();
             translate(0, 0);
             drawSolidRectangle(platformMedPositionX.get(i), platformMedPositionY.get(i), 400, 25);
+            changeColor(black);
+            drawRectangle(platformMedPositionX.get(i), platformMedPositionY.get(i), 400, 25);
             restoreLastTransform();
         }
         for (int i = 0; i < platformLargePositionX.size(); i++) {
@@ -754,6 +760,8 @@ public class Main extends GameEngine {
             saveCurrentTransform();
             translate(0, 0);
             drawSolidRectangle(platformLargePositionX.get(i), platformLargePositionY.get(i), 800, 25);
+            changeColor(black);
+            drawRectangle(platformLargePositionX.get(i), platformLargePositionY.get(i), 800, 25);
             restoreLastTransform();
         }
         for (int i = 0; i < platformVertPositionX.size(); i++) {
@@ -761,6 +769,8 @@ public class Main extends GameEngine {
             saveCurrentTransform();
             translate(0, 0);
             drawSolidRectangle(platformVertPositionX.get(i), platformVertPositionY.get(i), 25, 100);
+            changeColor(black);
+            drawRectangle(platformVertPositionX.get(i), platformVertPositionY.get(i), 25, 100);
             restoreLastTransform();
         }
         for (int i = 0; i < jumpPadPositionX.size(); i++) {
@@ -778,11 +788,12 @@ public class Main extends GameEngine {
     ArrayList<Double> spikeEnemyPosistionY;
     ArrayList<Double> bounceEnemyPosistionX;
     ArrayList<Double> bounceEnemyPosistionY;
-    Image spikeEnemy;
+    Image spikeEnemy, bounceEnemy;
     boolean[] bounceEnemyActive;
     ArrayList<ArrayList<Double>> enemies;
     public void initEnemies(){
         spikeEnemy = loadImage("spikeenemy.png");
+        bounceEnemy = loadImage("bouncingenemy.png");
         spikeEnemyPosistionX = new ArrayList<>();
         spikeEnemyPosistionY = new ArrayList<>();
         bounceEnemyPosistionX = new ArrayList<>();
@@ -822,9 +833,10 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPosistionX.size(); i++) {
                 if(bounceEnemyActive[i]) {
-                    changeColor(Color.RED);
+                    //changeColor(Color.RED);
                     translate(bounceEnemyPosistionX.get(i), bounceEnemyPosistionY.get(i));
-                    drawSolidCircle(0, 0, 20);
+                    drawImage(bounceEnemy,-ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
+                    //drawSolidCircle(0, 0, 20);
                     restoreLastTransform();
                 }
             }
@@ -851,13 +863,13 @@ public class Main extends GameEngine {
                 bounceEnemyPosistionX.set(i, bounceEnemyPosistionX.get(i) - gameSpeed * dt);
                 bounceEnemyPosistionY.set(i, bounceEnemyPosistionY.get(i) + bounceEnemySpeedY * dt);
                 if (bounceEnemyPosistionY.get(i) < width) {
-                        temp = new ArrayList<>();
-                        temp.add((double) i);
-                        temp.add(bounceEnemyPosistionX.get(i));
-                        temp.add(bounceEnemyPosistionY.get(i));
-                        temp.add(40.0);
-                        temp.add(40.0);
-                        enemies.add(temp);
+                    temp = new ArrayList<>();
+                    temp.add((double) i);
+                    temp.add(bounceEnemyPosistionX.get(i));
+                    temp.add(bounceEnemyPosistionY.get(i));
+                    temp.add(40.0);
+                    temp.add(40.0);
+                    enemies.add(temp);
                 }
                 // Ball isn't bouncing?
                 if (i == 0) {
@@ -906,10 +918,12 @@ public class Main extends GameEngine {
 
     boolean Jump, jumpReady, heavy;
     int jumpCount, ballRadius, canJumpPad;
-    double ballPositionX, ballPositionY, ballVelocityX, ballVelocityY;
+    double ballPositionX, ballPositionY, ballVelocityX, ballVelocityY, ballAngle;
     Color ballColour;
+    Image ballImage;
 
     public void initBall(){
+        ballImage = loadImage("ball.png");
         Jump = false;
         jumpReady = true;
         heavy = false;
@@ -921,16 +935,20 @@ public class Main extends GameEngine {
         ballVelocityY = 0;
         ballColour = white;
         canJumpPad = 0;
+        ballAngle = 0;
 
     }
     public void drawBall() {
-        changeColor(ballColour);
+        //changeColor(ballColour);
         saveCurrentTransform();
-        translate(0, 0);
-        drawSolidCircle(ballPositionX, ballPositionY , ballRadius);
+        rotate(ballAngle);
+        translate(ballPositionX,ballPositionY);
+        drawImage(ballImage, -ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
+        //drawSolidCircle(ballPositionX, ballPositionY , ballRadius);
         restoreLastTransform();
     }
     public void updateBall(double dt){
+        //ballAngle += 30*dt;
         ballPositionY -= ballVelocityY / 50;
         ballPositionX += ballVelocityX / 50;
         int[] platformcheck = checkBallOnPlatform();
@@ -1097,7 +1115,7 @@ public class Main extends GameEngine {
         }
     }
     public void checkBallonSpikes(){
-        if (ballPositionY>=height()-65){
+        if (ballPositionY>=height()-70){
             if(lives>0){
                 respawnBall(0.0);
             }else {
@@ -1131,17 +1149,17 @@ public class Main extends GameEngine {
         }
         for (ArrayList<Double> platform : platforms) {
             for (int i = spawnX; i<=spawnX+100;i++) {
-                    if (platform.get(1) <= i && platform.get(1) + platform.get(3) >= i) {
-                        ballPositionX = i;
-                        heavy = false;
-                        ballColour = white;
-                        ballVelocityY = 0;
-                        ballPositionY = platform.get(2) - ballRadius;
-                        jumpReady = true;
-                        breaking = true;
-                        lives--;
-                        break;
-                    }
+                if (platform.get(1) <= i && platform.get(1) + platform.get(3) >= i) {
+                    ballPositionX = i;
+                    heavy = false;
+                    ballColour = white;
+                    ballVelocityY = 0;
+                    ballPositionY = platform.get(2) - ballRadius;
+                    jumpReady = true;
+                    breaking = true;
+                    lives--;
+                    break;
+                }
                 //Need to add if statement for if the ball respawns same place as ememies
                 if(breaking) {
                     break;
@@ -1259,20 +1277,20 @@ public class Main extends GameEngine {
     }
     int count = 0;
     public void drawCoins() {
-         if(gameLevel==1) {
+        if(gameLevel==1) {
             for (int i = 0; i < coinPosistionX.size(); i++) {
                 if(activeCoin[i]==true) {
-                 translate(coinPosistionX.get(i), coinPosistionY.get(i));
-                 drawImage(coinFrames.get(count/2), 0, 0, 20, 20);
-                 restoreLastTransform();
+                    translate(coinPosistionX.get(i), coinPosistionY.get(i));
+                    drawImage(coinFrames.get(count/2), 0, 0, 20, 20);
+                    restoreLastTransform();
                 }
             }
         }
-         if(count<11) {
-             count++;
-         }else{
-             count = 0;
-         }
+        if(count<11) {
+            count++;
+        }else{
+            count = 0;
+        }
     }
     public void updateCoins(double dt) {
         if (gameLevel == 1) {
