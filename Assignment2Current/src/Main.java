@@ -8,6 +8,7 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 
 
@@ -38,7 +39,7 @@ public class Main extends GameEngine {
         livesDifficulty = 0;
         difficultyMenu = 1; //0 = easy, 1 == normal, 2 == hard
         livesMenu = 1;//0 = 0 lives, 1 == 3 lives, 2 == 5 lives
-        gameLives = 3;
+        gameLives = 2;
         if (difficulty == Difficulty.Easy){
             gameSpeed = 150;
         }else if(difficulty == Difficulty.Normal){
@@ -47,6 +48,7 @@ public class Main extends GameEngine {
             gameSpeed = 250;
         }
     }
+
     public void update(double dt) {
         if (state == GameState.Play) {
             updateGame(dt);
@@ -85,7 +87,7 @@ public class Main extends GameEngine {
             changeColor(10,77,104);
             drawText(10,30, "Score: " + score,30);
             if(gameLives>=0){
-                drawText(10,60, "Lives: " + lives,30);
+                drawText(10,60, "Lives: " + (lives + 1),30);
             }
         }else{
             changeColor(Color.BLUE);
@@ -392,12 +394,14 @@ public class Main extends GameEngine {
                 if (jumpReady){ballPositionY--; Jump = true; jumpReady=false;}
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                ballAngle -= 200*0.015;
                 if (ballVelocityX > 50) {
                     ballVelocityX -= (ballVelocityX-50)/2;
                 }
                 ballVelocityX -= 15;
             }
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                ballAngle += 200*0.015;
                 if (ballVelocityX < -50) {
                     ballVelocityX -= (ballVelocityX+50)/2;
                 }
@@ -450,7 +454,7 @@ public class Main extends GameEngine {
                 }else if(menuOption == 3){
                     if(gameLives ==-1) {
                         livesMenu = 0;
-                    }else if (gameLives == 3){
+                    }else if (gameLives == 2){
                         livesMenu = 1;
                     }else{
                         livesMenu = 2;
@@ -584,13 +588,13 @@ public class Main extends GameEngine {
                 } else if (livesDifficulty == 1) {
                     if (livesMenu == 0) {
                         livesMenu += 2;
-                        gameLives = 5;
+                        gameLives = 4;
                     } else if (livesMenu == 1) {
                         livesMenu--;
                         gameLives = -1;
                     } else if (livesMenu == 2) {
                         livesMenu--;
-                        gameLives = 3;
+                        gameLives = 2;
                     }
                 }
             }
@@ -609,10 +613,10 @@ public class Main extends GameEngine {
                 } else if (livesDifficulty == 1) {
                     if (livesMenu == 0) {
                         livesMenu++;
-                        gameLives = 3;
+                        gameLives = 2;
                     } else if (livesMenu == 1) {
                         livesMenu++;
-                        gameLives = 5;
+                        gameLives = 4;
                     } else if (livesMenu == 2) {
                         livesMenu -= 2;
                         gameLives = -1;
@@ -703,12 +707,12 @@ public class Main extends GameEngine {
     public void updatePlatforms(double dt) {
         platforms = new ArrayList<>();
         changeColor(white);
+        doUpdate(dt, platformVertPositionX, platformVertPositionY, 4, 25,100);
         doUpdate(dt, jumpPadPositionX, jumpPadPositionY, 5, 30,30);
         doUpdate(dt, platformXSmallPositionX, platformXSmallPositionY, 0, 100,25);
         doUpdate(dt, platformSmallPositionX, platformSmallPositionY, 1, 200,25);
         doUpdate(dt, platformMedPositionX, platformMedPositionY, 2, 400,25);
         doUpdate(dt, platformLargePositionX, platformLargePositionY, 3, 800,25);
-        doUpdate(dt, platformVertPositionX, platformVertPositionY, 4, 25,100);
     }
 
     private void doUpdate(double dt, ArrayList<Double> platformListX, ArrayList<Double> platformListY, double id, double length, double height) {
@@ -801,6 +805,7 @@ public class Main extends GameEngine {
         bounceEnemyPositionX = new ArrayList<>();
         bounceEnemyPositionY = new ArrayList<>();
         bounceEnemyActive = new boolean[10];
+
         if(gameLevel == 1) {
             try {
                 enemyRead = new Scanner(new File("enemyPositions.txt"));
@@ -834,13 +839,16 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPositionX.size(); i++) {
                 if(bounceEnemyActive[i]) {
+                    //changeColor(Color.RED);
                     translate(bounceEnemyPositionX.get(i), bounceEnemyPositionY.get(i));
                     drawImage(bounceEnemy,-ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
+                    //drawSolidCircle(0, 0, 20);
                     restoreLastTransform();
                 }
             }
         }
     }
+    double bounceEnemySpeedY;
     ArrayList<Double> temp;
     public void updateEnemies(double dt) {
         enemies = new ArrayList<>();
@@ -882,6 +890,42 @@ public class Main extends GameEngine {
                     }
                 }
                 // Ball isn't bouncing?
+                if (i == 0) {
+                    if (bounceEnemyPositionY.get(i) >= 75) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPositionY.get(i) <= 175) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                } else if (i == 1) {
+                    if (bounceEnemyPositionY.get(i) <= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPositionY.get(i) >= 300) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                } else if (i == 2) {
+                    if (bounceEnemyPositionY.get(i) <= 100) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPositionY.get(i) >= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                } else if (i == 3) {
+                    if (bounceEnemyPositionY.get(i) <= 100) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPositionY.get(i) >= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                } else if (i == 4) {
+                    if (bounceEnemyPositionY.get(i) <= 100) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                    if (bounceEnemyPositionY.get(i) >= 200) {
+                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
+                    }
+                }
             }
         }
     }
@@ -915,6 +959,7 @@ public class Main extends GameEngine {
 
     }
     public void drawBall() {
+        //changeColor(ballColour);
         saveCurrentTransform();
         translate(ballPositionX,ballPositionY);
         if (heavy) {
@@ -932,8 +977,19 @@ public class Main extends GameEngine {
         ballPositionY -= ballVelocityY / 50;
         ballPositionX += ballVelocityX / 50;
         int[] platformcheck = checkBallOnPlatform();
+
         if (ballVelocityY < 0 && platformcheck[1] == 1) {
-            doBallOnPlatform(platformcheck[0]);
+            if (!jumpReady) {
+                if (ballVelocityY <= -51 && !heavy) {
+                    ballVelocityY = -(ballVelocityY) / 3;
+                } else {jumpReady = true;}
+
+            }else {
+                heavy = false;
+                ballColour = white;
+                ballVelocityY = 0;
+                ballPositionY = platformcheck[0]-ballRadius;
+            }
         }
         if (ballPositionX <= ballRadius) {
             ballPositionX = ballRadius;
@@ -963,7 +1019,7 @@ public class Main extends GameEngine {
                 else {
                     if (lives > 0) {
                         respawnBall(0.0);
-                    } else if (lives <= 0) {
+                    } else {
                         state = GameState.GameOver;
                     }
                 }
@@ -973,9 +1029,10 @@ public class Main extends GameEngine {
                 ballColour = white;
                 if (canJumpPad == 0) {
                     Jump = false;
+                    ballPositionY -= 10;
                     jumpReady = false;
                     canJumpPad++;
-                    ballVelocityY = 325 + (ballVelocityY/2);
+                    ballVelocityY = 325 + (Math.abs(ballVelocityY/2.5));
                 }
                 else {
                     canJumpPad++;
@@ -1015,16 +1072,17 @@ public class Main extends GameEngine {
                     return new int[]{platform.get(2).intValue(), 4};
                 }
                 // If Ball on top of platform.
-                else if (ballPositionX >= platform.get(1) && ballPositionX - ballRadius <= platform.get(1) + platform.get(3) &&
+                if (ballPositionX >= platform.get(1) && ballPositionX - ballRadius <= platform.get(1) + platform.get(3) &&
                         ballPositionY + ballRadius >= platform.get(2) && ballPositionY < platform.get(2)) {
                     return new int[]{platform.get(2).intValue(), 1};
                 }
-                else if (ballPositionX >= platform.get(1) && ballPositionX <= platform.get(1) + platform.get(3) &&
+
+                if (ballPositionX >= platform.get(1) && ballPositionX <= platform.get(1) + platform.get(3) &&
                         ballPositionY - ballRadius <= platform.get(2) + platform.get(4) && ballPositionY > platform.get(2) + platform.get(4)) {
                     ballPositionY++;
                     return new int[]{platform.get(2).intValue()+ platform.get(4).intValue(), 2}; // bottom of platform hit
                 }
-                else if (ballPositionX + ballRadius >= platform.get(1) && ballPositionX < platform.get(1) &&
+                if (ballPositionX + ballRadius >= platform.get(1) && ballPositionX - ballRadius < platform.get(1) &&
                         ballPositionY + ballRadius >= platform.get(2) && ballPositionY - ballRadius <= platform.get(2) + platform.get(4)) {
                     ballPositionX--;
                     return new int[]{platform.get(1).intValue(), 3}; // left of platform hit
@@ -1033,25 +1091,12 @@ public class Main extends GameEngine {
         }
         return new int[]{0, 0};
     }
-    public void doBallOnPlatform(int platformHeight) {
-        if (!jumpReady) {
-            if (ballVelocityY <= -51 && !heavy) {
-                ballVelocityY = -(ballVelocityY) / 3;
-            } else {jumpReady = true;}
-
-        }else {
-            heavy = false;
-            ballColour = white;
-            ballVelocityY = 0;
-            ballPositionY = platformHeight-ballRadius;
-        }
-    }
     public void checkCollisions(){
         if(gameLevel == 1){
             checkLevelFinish();
             checkBallonSpikes();
             if (enemies != null) {
-               checkEnemyCollision();
+                checkEnemyCollision();
             }
             checkCoinCollision();
         }
@@ -1139,6 +1184,7 @@ public class Main extends GameEngine {
                     lives--;
                     break;
                 }
+                //Need to add if statement for if the ball respawns same place as ememies
                 if(breaking) {
                     break;
                 }
@@ -1241,11 +1287,9 @@ public class Main extends GameEngine {
             }
             while (coinRead.hasNext()) {
                 currentLine = coinRead.nextLine().split(",");
-                switch (currentLine[0]) {
-                    case "0" -> {
-                        coinPositionX.add(Double.parseDouble(currentLine[1]));
-                        coinPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
+                if (currentLine[0].equals("0")) {
+                    coinPositionX.add(Double.parseDouble(currentLine[1]));
+                    coinPositionY.add(Double.parseDouble(currentLine[2]));
                 }
             }
             for (int i = 0; i < coinPositionX.size(); i++) {
