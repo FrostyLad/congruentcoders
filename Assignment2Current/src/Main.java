@@ -790,7 +790,10 @@ public class Main extends GameEngine {
     Image spikeEnemy, bounceEnemy;
     boolean[] bounceEnemyActive;
     ArrayList<ArrayList<Double>> enemies;
+    double bounceEnemyStartY, bounceEnemyVelocityY,bounceHeight;
     public void initEnemies(){
+        bounceHeight = 100;
+        bounceEnemyVelocityY = 150;
         spikeEnemy = loadImage("spikeenemy.png");
         bounceEnemy = loadImage("bouncingenemy.png");
         spikeEnemyPositionX = new ArrayList<>();
@@ -856,6 +859,8 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPositionX.size(); i++) {
                 bounceEnemyPositionX.set(i, bounceEnemyPositionX.get(i) - gameSpeed * dt);
+                bounceEnemyPositionY.set(i, bounceEnemyPositionY.get(i) - bounceEnemyVelocityY * dt);
+
                 if (bounceEnemyPositionY.get(i) < width) {
                     temp = new ArrayList<>();
                     temp.add(1.0);
@@ -865,8 +870,18 @@ public class Main extends GameEngine {
                     temp.add(40.0);
                     enemies.add(temp);
                 }
+                for (ArrayList<Double> platform : platforms) {
+                    if (platform.get(1) <= bounceEnemyPositionX.get(i) && platform.get(1) + platform.get(3) >= bounceEnemyPositionX.get(i)) {
+                        bounceEnemyStartY = platform.get(2) - ballRadius;
+                        if(bounceEnemyPositionY.get(i)<=platform.get(2)-bounceHeight){
+                            bounceEnemyVelocityY = -150;
+                        }
+                        if(bounceEnemyPositionY.get(i)>=platform.get(2)-ballRadius){
+                            bounceEnemyVelocityY = 150;
+                        }
+                    }
+                }
                 // Ball isn't bouncing?
-
             }
         }
     }
@@ -879,10 +894,12 @@ public class Main extends GameEngine {
     int jumpCount, ballRadius, canJumpPad;
     double ballPositionX, ballPositionY, ballVelocityX, ballVelocityY, ballAngle;
     Color ballColour;
-    Image ballImage;
+    Image ballImage,ballHeavyImage,flamesImage;
 
     public void initBall(){
         ballImage = loadImage("ball.png");
+        ballHeavyImage= loadImage("BallHeavy.png");
+        flamesImage = loadImage("Flames.png");
         Jump = false;
         jumpReady = true;
         heavy = false;
@@ -900,8 +917,14 @@ public class Main extends GameEngine {
     public void drawBall() {
         saveCurrentTransform();
         translate(ballPositionX,ballPositionY);
-        rotate(ballAngle);
-        drawImage(ballImage, -ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
+        if (heavy) {
+            drawImage(flamesImage, -ballRadius-10, -ballRadius-48, 55, 90);
+            rotate(ballAngle);
+            drawImage(ballHeavyImage, -ballRadius, -ballRadius, ballRadius * 2, ballRadius * 2);
+        }else{
+            rotate(ballAngle);
+            drawImage(ballImage, -ballRadius, -ballRadius, ballRadius * 2, ballRadius * 2);
+        }
         restoreLastTransform();
     }
     public void updateBall(double dt){
@@ -909,7 +932,6 @@ public class Main extends GameEngine {
         ballPositionY -= ballVelocityY / 50;
         ballPositionX += ballVelocityX / 50;
         int[] platformcheck = checkBallOnPlatform();
-
         if (ballVelocityY < 0 && platformcheck[1] == 1) {
             doBallOnPlatform(platformcheck[0]);
         }
@@ -1029,7 +1051,7 @@ public class Main extends GameEngine {
             checkLevelFinish();
             checkBallonSpikes();
             if (enemies != null) {
-                checkEnemyCollision();
+               checkEnemyCollision();
             }
             checkCoinCollision();
         }
@@ -1117,7 +1139,6 @@ public class Main extends GameEngine {
                     lives--;
                     break;
                 }
-                //Need to add if statement for if the ball respawns same place as ememies
                 if(breaking) {
                     break;
                 }
