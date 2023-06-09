@@ -47,7 +47,6 @@ public class Main extends GameEngine {
             gameSpeed = 250;
         }
     }
-
     public void update(double dt) {
         if (state == GameState.Play) {
             updateGame(dt);
@@ -249,6 +248,7 @@ public class Main extends GameEngine {
     public void drawGameOver(){
         changeColor(10,77,104);
         drawText(50,100, "Game Over",75);
+        changeColor(5,191,219);
         drawText(100,180,"Score: " + score,30);
         drawText(100,230,"You can change the game difficulty",15);
         drawText(100,250," and lives amount in options",15);
@@ -798,7 +798,6 @@ public class Main extends GameEngine {
         bounceEnemyPositionX = new ArrayList<>();
         bounceEnemyPositionY = new ArrayList<>();
         bounceEnemyActive = new boolean[10];
-
         if(gameLevel == 1) {
             try {
                 enemyRead = new Scanner(new File("enemyPositions.txt"));
@@ -832,16 +831,13 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPositionX.size(); i++) {
                 if(bounceEnemyActive[i]) {
-                    //changeColor(Color.RED);
                     translate(bounceEnemyPositionX.get(i), bounceEnemyPositionY.get(i));
                     drawImage(bounceEnemy,-ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
-                    //drawSolidCircle(0, 0, 20);
                     restoreLastTransform();
                 }
             }
         }
     }
-    double bounceEnemySpeedY;
     ArrayList<Double> temp;
     public void updateEnemies(double dt) {
         enemies = new ArrayList<>();
@@ -860,7 +856,6 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPositionX.size(); i++) {
                 bounceEnemyPositionX.set(i, bounceEnemyPositionX.get(i) - gameSpeed * dt);
-                bounceEnemyPositionY.set(i, bounceEnemyPositionY.get(i) + bounceEnemySpeedY * dt);
                 if (bounceEnemyPositionY.get(i) < width) {
                     temp = new ArrayList<>();
                     temp.add(1.0);
@@ -871,42 +866,7 @@ public class Main extends GameEngine {
                     enemies.add(temp);
                 }
                 // Ball isn't bouncing?
-                if (i == 0) {
-                    if (bounceEnemyPositionY.get(i) >= 75) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) <= 175) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 1) {
-                    if (bounceEnemyPositionY.get(i) <= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 300) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 2) {
-                    if (bounceEnemyPositionY.get(i) <= 100) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 3) {
-                    if (bounceEnemyPositionY.get(i) <= 100) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 4) {
-                    if (bounceEnemyPositionY.get(i) <= 100) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                }
+
             }
         }
     }
@@ -938,12 +898,10 @@ public class Main extends GameEngine {
 
     }
     public void drawBall() {
-        //changeColor(ballColour);
         saveCurrentTransform();
         translate(ballPositionX,ballPositionY);
         rotate(ballAngle);
         drawImage(ballImage, -ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
-        //drawSolidCircle(ballPositionX, ballPositionY , ballRadius);
         restoreLastTransform();
     }
     public void updateBall(double dt){
