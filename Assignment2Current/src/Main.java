@@ -8,7 +8,6 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Scanner;
 
 
@@ -79,11 +78,11 @@ public class Main extends GameEngine {
     public void drawGame(){
         if(gameLevel == 1) {
             drawSpikes();
-            drawPlatforms();
             drawEnemies();
             drawBall();
             drawFlag();
             drawCoins();
+            drawPlatforms();
             changeColor(10,77,104);
             drawText(10,30, "Score: " + score,30);
             if(gameLives>=0){
@@ -228,7 +227,6 @@ public class Main extends GameEngine {
         changeColor(10,77,104);
         drawText(90,150, "Do you want to exit?");
         if(exitOption == 0){
-            changeColor(5,191,219);
             drawText(100, 300, "No");
             changeColor(8, 131, 149);
             drawSolidCircle(80,285,15);
@@ -390,33 +388,43 @@ public class Main extends GameEngine {
 
     public void keyPressed(KeyEvent e){
         if (state == GameState.Play) {
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
-                if (jumpReady){ballPositionY--; Jump = true; jumpReady=false;}
-            }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                ballAngle -= 200*0.015;
-                if (ballVelocityX > 50) {
-                    ballVelocityX -= (ballVelocityX-50)/2;
+            if(gameLevel == 1) {
+                if (e.getKeyCode() == KeyEvent.VK_UP) {
+                    if (jumpReady) {
+                        ballPositionY--;
+                        Jump = true;
+                        jumpReady = false;
+                    }
                 }
-                ballVelocityX -= 15;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                ballAngle += 200*0.015;
-                if (ballVelocityX < -50) {
-                    ballVelocityX -= (ballVelocityX+50)/2;
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    ballAngle -= 200 * 0.015;
+                    if (ballVelocityX > 50) {
+                        ballVelocityX -= (ballVelocityX - 50) / 2;
+                    }
+                    ballVelocityX -= 15;
                 }
-                ballVelocityX += 15;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                if (checkBallOnPlatform()[1] == 0) {
-                    ballColour = Color.gray;
-                    heavy = true;
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    ballAngle += 200 * 0.015;
+                    if (ballVelocityX < -50) {
+                        ballVelocityX -= (ballVelocityX + 50) / 2;
+                    }
+                    ballVelocityX += 15;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    if (checkBallOnPlatform()[1] == 0) {
+                        ballColour = Color.gray;
+                        heavy = true;
+                    }
+                }
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    state = GameState.Menu;
+                }
+            }else {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    state = GameState.Menu;
                 }
             }
-            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                state = GameState.Menu;
-            }
-        }else if (state == GameState.Menu){
+            } else if (state == GameState.Menu){
             if (e.getKeyCode() == KeyEvent.VK_UP) {
                 if(menuOption == 1){
                     menuOption--;
@@ -794,10 +802,9 @@ public class Main extends GameEngine {
     Image spikeEnemy, bounceEnemy;
     boolean[] bounceEnemyActive;
     ArrayList<ArrayList<Double>> enemies;
-    double bounceEnemyStartY, bounceEnemyVelocityY,bounceHeight;
+    double bounceEnemyVelocityY,bounceHeight;
     public void initEnemies(){
         bounceHeight = 100;
-        bounceEnemyVelocityY = 150;
         spikeEnemy = loadImage("spikeenemy.png");
         bounceEnemy = loadImage("bouncingenemy.png");
         spikeEnemyPositionX = new ArrayList<>();
@@ -839,37 +846,51 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPositionX.size(); i++) {
                 if(bounceEnemyActive[i]) {
-                    //changeColor(Color.RED);
-                    translate(bounceEnemyPositionX.get(i), bounceEnemyPositionY.get(i));
-                    drawImage(bounceEnemy,-ballRadius,-ballRadius,ballRadius*2,ballRadius*2);
-                    //drawSolidCircle(0, 0, 20);
+                    translate(bounceEnemyPositionX.get(i)-ballRadius, bounceEnemyPositionY.get(i)-ballRadius);
+                    drawImage(bounceEnemy,-20,-20,ballRadius*2,ballRadius*2);
                     restoreLastTransform();
                 }
             }
         }
     }
-    double bounceEnemySpeedY;
     ArrayList<Double> temp;
+    double[] apex, startY;
     public void updateEnemies(double dt) {
         enemies = new ArrayList<>();
+        apex = new double[10];
+        startY = new double[10];
         if (gameLevel == 1) {
-            for (int i = 0; i < spikeEnemyPositionX.size(); i++) {
+            for (int i = 0; i < spikeEnemyPositionY.size(); i++) {
                 spikeEnemyPositionX.set(i, spikeEnemyPositionX.get(i) - gameSpeed * dt);
-                if (spikeEnemyPositionY.get(i) < width) {
-                    temp = new ArrayList<>();
-                    temp.add(0.0);
-                    temp.add(spikeEnemyPositionX.get(i));
-                    temp.add(spikeEnemyPositionY.get(i));
-                    temp.add(40.0);
-                    temp.add(60.0);
-                    enemies.add(temp);
+                if (spikeEnemyPositionX.get(i) < width){
+                    if (spikeEnemyPositionY.get(i) < width) {
+                        temp = new ArrayList<>();
+                        temp.add(0.0);
+                        temp.add(spikeEnemyPositionX.get(i));
+                        temp.add(spikeEnemyPositionY.get(i));
+                        temp.add(40.0);
+                        temp.add(60.0);
+                        enemies.add(temp);
+                    }
                 }
             }
-            for (int i = 0; i < bounceEnemyPositionX.size(); i++) {
+            for (int i = 0; i < bounceEnemyPositionY.size(); i++) {
                 bounceEnemyPositionX.set(i, bounceEnemyPositionX.get(i) - gameSpeed * dt);
+                for (ArrayList<Double> platform : platforms) {
+                    if(platform.get(1)<=bounceEnemyPositionX.get(i)+ballRadius
+                            && platform.get(1)+platform.get(3)>=bounceEnemyPositionX.get(i)-ballRadius){
+                        apex[i] = platform.get(2)-bounceHeight+ballRadius;
+                        startY[i] = platform.get(2);
+                        if(bounceEnemyPositionY.get(i)>= startY[i]){
+                            bounceEnemyVelocityY=150;
+                        }
+                        if(bounceEnemyPositionY.get(i)<=apex[i]){
+                            bounceEnemyVelocityY =-150;
+                        }
+                    }
+                }
                 bounceEnemyPositionY.set(i, bounceEnemyPositionY.get(i) - bounceEnemyVelocityY * dt);
-
-                if (bounceEnemyPositionY.get(i) < width) {
+                if (bounceEnemyPositionX.get(i) < width&&bounceEnemyPositionX.get(i)>0) {
                     temp = new ArrayList<>();
                     temp.add(1.0);
                     temp.add(bounceEnemyPositionX.get(i));
@@ -878,58 +899,9 @@ public class Main extends GameEngine {
                     temp.add(40.0);
                     enemies.add(temp);
                 }
-                for (ArrayList<Double> platform : platforms) {
-                    if (platform.get(1) <= bounceEnemyPositionX.get(i) && platform.get(1) + platform.get(3) >= bounceEnemyPositionX.get(i)) {
-                        bounceEnemyStartY = platform.get(2) - ballRadius;
-                        if(bounceEnemyPositionY.get(i)<=platform.get(2)-bounceHeight){
-                            bounceEnemyVelocityY = -150;
-                        }
-                        if(bounceEnemyPositionY.get(i)>=platform.get(2)-ballRadius){
-                            bounceEnemyVelocityY = 150;
-                        }
-                    }
-                }
-                // Ball isn't bouncing?
-                if (i == 0) {
-                    if (bounceEnemyPositionY.get(i) >= 75) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) <= 175) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 1) {
-                    if (bounceEnemyPositionY.get(i) <= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 300) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 2) {
-                    if (bounceEnemyPositionY.get(i) <= 100) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 3) {
-                    if (bounceEnemyPositionY.get(i) <= 100) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                } else if (i == 4) {
-                    if (bounceEnemyPositionY.get(i) <= 100) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                    if (bounceEnemyPositionY.get(i) >= 200) {
-                        bounceEnemySpeedY = bounceEnemySpeedY * -1;
-                    }
-                }
             }
         }
     }
-
     //*******************************************************
     //*************************Ball**************************
     //*******************************************************
@@ -959,7 +931,6 @@ public class Main extends GameEngine {
 
     }
     public void drawBall() {
-        //changeColor(ballColour);
         saveCurrentTransform();
         translate(ballPositionX,ballPositionY);
         if (heavy) {
