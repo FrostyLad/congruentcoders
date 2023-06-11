@@ -69,7 +69,7 @@ public class Main extends GameEngine {
         }
     }
     public void drawGame(){
-        if(gameLevel <= 2) {
+        if(gameLevel <= 3) {
             drawSpikes();
             drawEnemies();
             drawBall();
@@ -267,7 +267,7 @@ public class Main extends GameEngine {
     }
     public void drawLevelComplete(){
         changeColor(10,77,104);
-        drawText(50,150, "You Completed Level "+gameLevel+"!");
+        drawText(50,150, "You Completed Level "+(gameLevel-1)+"!");
         drawText(50,200,"Score: " + score);
         if(levelCompOption == 0){
             changeColor(5,191,219);
@@ -388,7 +388,7 @@ public class Main extends GameEngine {
 
     public void keyPressed(KeyEvent e){
         if (state == GameState.Play) {
-            if(gameLevel <= 2) {
+            if(gameLevel <= 3) {
                 if (e.getKeyCode() == KeyEvent.VK_UP) {
                     if (jumpReady) {
                         ballPositionY--;
@@ -497,12 +497,15 @@ public class Main extends GameEngine {
                     state = GameState.Play;
                 }else if (levelMenu == 3){
                     gameLevel = 3;
+                    initGame();
                     state = GameState.Play;
                 }else if (levelMenu == 4){
                     gameLevel = 4;
+                    initGame();
                     state = GameState.Play;
                 }else if (levelMenu == 5){
                     gameLevel = 5;
+                    initGame();
                     state = GameState.Play;
                 }
             }
@@ -567,11 +570,9 @@ public class Main extends GameEngine {
             }
             if(e.getKeyCode() == KeyEvent.VK_ENTER){
                 if(levelCompOption == 0){
-                    gameLevel++;
                     initGame();
                     state = GameState.Play;
                 }else if(levelCompOption == 1){
-                    gameLevel++;
                     state = GameState.Menu;
                 }
             }
@@ -645,7 +646,7 @@ public class Main extends GameEngine {
         }
     }
     public void keyReleased(KeyEvent e) {
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             if (e.getKeyCode() == KeyEvent.VK_UP) {
                 Jump = false;
                 jumpCount = 0;
@@ -665,18 +666,18 @@ public class Main extends GameEngine {
     Image jumpPad;
     public void initPlatforms(){
         jumpPad = loadImage("Images/Sprites/jumppad.png");
-            jumpPadPositionX = new ArrayList<>();
-            jumpPadPositionY = new ArrayList<>();
-            platformXSmallPositionX = new ArrayList<>();
-            platformXSmallPositionY = new ArrayList<>();
-            platformSmallPositionX = new ArrayList<>();
-            platformSmallPositionY = new ArrayList<>();
-            platformMedPositionX = new ArrayList<>();
-            platformMedPositionY = new ArrayList<>();
-            platformLargePositionX = new ArrayList<>();
-            platformLargePositionY = new ArrayList<>();
-            platformVertPositionX = new ArrayList<>();
-            platformVertPositionY = new ArrayList<>();
+        jumpPadPositionX = new ArrayList<>();
+        jumpPadPositionY = new ArrayList<>();
+        platformXSmallPositionX = new ArrayList<>();
+        platformXSmallPositionY = new ArrayList<>();
+        platformSmallPositionX = new ArrayList<>();
+        platformSmallPositionY = new ArrayList<>();
+        platformMedPositionX = new ArrayList<>();
+        platformMedPositionY = new ArrayList<>();
+        platformLargePositionX = new ArrayList<>();
+        platformLargePositionY = new ArrayList<>();
+        platformVertPositionX = new ArrayList<>();
+        platformVertPositionY = new ArrayList<>();
         if(gameLevel == 1) {
             try {
                 platformRead = new Scanner(new File("platformPositions.txt"));
@@ -689,40 +690,46 @@ public class Main extends GameEngine {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }else if (gameLevel == 3){
+            try {
+                platformRead = new Scanner(new File("platformPositionsLevel3.txt"));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
-            while (platformRead.hasNext()) {
-                currentLine = platformRead.nextLine().split(",");
-                switch (currentLine[0]) {
-                    case "0" -> {
-                        platformXSmallPositionX.add(Double.parseDouble(currentLine[1]));
-                        platformXSmallPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
-                    case "1" -> {
-                        platformSmallPositionX.add(Double.parseDouble(currentLine[1]));
-                        platformSmallPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
-                    case "2" -> {
-                        platformMedPositionX.add(Double.parseDouble(currentLine[1]));
-                        platformMedPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
-                    case "3" -> {
-                        platformLargePositionX.add(Double.parseDouble(currentLine[1]));
-                        platformLargePositionY.add(Double.parseDouble(currentLine[2]));
-                    }
-                    case "4" -> {
-                        platformVertPositionX.add(Double.parseDouble(currentLine[1]));
-                        platformVertPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
-                    case "5" -> {
-                        jumpPadPositionX.add(Double.parseDouble(currentLine[1]));
-                        jumpPadPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
+        while (platformRead.hasNext()) {
+            currentLine = platformRead.nextLine().split(",");
+            switch (currentLine[0]) {
+                case "0" -> {
+                    platformXSmallPositionX.add(Double.parseDouble(currentLine[1]));
+                    platformXSmallPositionY.add(Double.parseDouble(currentLine[2]));
+                }
+                case "1" -> {
+                    platformSmallPositionX.add(Double.parseDouble(currentLine[1]));
+                    platformSmallPositionY.add(Double.parseDouble(currentLine[2]));
+                }
+                case "2" -> {
+                    platformMedPositionX.add(Double.parseDouble(currentLine[1]));
+                    platformMedPositionY.add(Double.parseDouble(currentLine[2]));
+                }
+                case "3" -> {
+                    platformLargePositionX.add(Double.parseDouble(currentLine[1]));
+                    platformLargePositionY.add(Double.parseDouble(currentLine[2]));
+                }
+                case "4" -> {
+                    platformVertPositionX.add(Double.parseDouble(currentLine[1]));
+                    platformVertPositionY.add(Double.parseDouble(currentLine[2]));
+                }
+                case "5" -> {
+                    jumpPadPositionX.add(Double.parseDouble(currentLine[1]));
+                    jumpPadPositionY.add(Double.parseDouble(currentLine[2]));
                 }
             }
+        }
 
     }
     public void updatePlatforms(double dt) {
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             platforms = new ArrayList<>();
             changeColor(white);
             doUpdate(dt, platformVertPositionX, platformVertPositionY, 4, 25, 100);
@@ -735,7 +742,7 @@ public class Main extends GameEngine {
     }
 
     private void doUpdate(double dt, ArrayList<Double> platformListX, ArrayList<Double> platformListY, double id, double length, double height) {
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             for (int i = 0; i < platformListX.size(); i++) {
                 platformListX.set(i, platformListX.get(i) - gameSpeed * dt);
                 if (platformListX.get(i) < width) {
@@ -752,7 +759,7 @@ public class Main extends GameEngine {
     }
 
     public void drawPlatforms() {
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             for (int i = 0; i < platformXSmallPositionX.size(); i++) {
                 changeColor(white);
                 saveCurrentTransform();
@@ -814,19 +821,31 @@ public class Main extends GameEngine {
     ArrayList<Double> spikeEnemyPositionY;
     ArrayList<Double> bounceEnemyPositionX;
     ArrayList<Double> bounceEnemyPositionY;
-    Image spikeEnemy, bounceEnemy;
-    boolean[] bounceEnemyActive;
+    ArrayList<Double> rollingEnemyPositionX;
+    ArrayList<Double> rollingEnemyPositionY;
+    ArrayList<Double> flyingEnemyPositionX;
+    ArrayList<Double> flyingEnemyPositionY;
+    Image spikeEnemy, bounceEnemy, rollingEnemy,flyingEnemy;
+    boolean[] bounceEnemyActive, rollingEnemyActive,flyingEnemyActive;
     ArrayList<ArrayList<Double>> enemies;
     double bounceEnemyVelocityY,bounceHeight;
     public void initEnemies(){
         bounceHeight = 100;
         spikeEnemy = loadImage("Images/Sprites/spikeenemy.png");
         bounceEnemy = loadImage("Images/Sprites/bouncingenemy.png");
+        rollingEnemy = loadImage("Images/Sprites/rollingenemy.png");
+        flyingEnemy = loadImage("Images/Sprites/flyingenemy.png");
         spikeEnemyPositionX = new ArrayList<>();
         spikeEnemyPositionY = new ArrayList<>();
         bounceEnemyPositionX = new ArrayList<>();
         bounceEnemyPositionY = new ArrayList<>();
+        rollingEnemyPositionX = new ArrayList<>();
+        rollingEnemyPositionY = new ArrayList<>();
+        flyingEnemyPositionX = new ArrayList<>();
+        flyingEnemyPositionY = new ArrayList<>();
         bounceEnemyActive = new boolean[10];
+        rollingEnemyActive = new boolean[10];
+        flyingEnemyActive = new boolean[10];
         if(gameLevel==1) {
             try {
                 enemyRead = new Scanner(new File("enemyPositions.txt"));
@@ -839,26 +858,44 @@ public class Main extends GameEngine {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        } else if (gameLevel==3) {
+            try {
+                enemyRead = new Scanner(new File("enemyPositionsLevel3.txt"));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
         while (enemyRead.hasNext()) {
-                currentLine = enemyRead.nextLine().split(",");
-                switch (currentLine[0]) {
-                    case "0" -> {
-                        spikeEnemyPositionX.add(Double.parseDouble(currentLine[1]));
-                        spikeEnemyPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
-                    case "1" -> {
-                        bounceEnemyPositionX.add(Double.parseDouble(currentLine[1]));
-                        bounceEnemyPositionY.add(Double.parseDouble(currentLine[2]));
-                    }
+            currentLine = enemyRead.nextLine().split(",");
+            switch (currentLine[0]) {
+                case "0" -> {
+                    spikeEnemyPositionX.add(Double.parseDouble(currentLine[1]));
+                    spikeEnemyPositionY.add(Double.parseDouble(currentLine[2]));
+                }
+                case "1" -> {
+                    bounceEnemyPositionX.add(Double.parseDouble(currentLine[1]));
+                    bounceEnemyPositionY.add(Double.parseDouble(currentLine[2]));
+                }case "2" -> {
+                    rollingEnemyPositionX.add(Double.parseDouble(currentLine[1]));
+                    rollingEnemyPositionY.add(Double.parseDouble(currentLine[2]));
+                }case "3" -> {
+                    flyingEnemyPositionX.add(Double.parseDouble(currentLine[1]));
+                    flyingEnemyPositionY.add(Double.parseDouble(currentLine[2]));
                 }
             }
+        }
         for (int i = 0; i < bounceEnemyPositionX.size(); i++) {
             bounceEnemyActive[i] = true;
         }
+        for (int i = 0; i < rollingEnemyPositionX.size(); i++) {
+            rollingEnemyActive[i] = true;
+        }
+        for (int i = 0; i < flyingEnemyPositionX.size(); i++) {
+            flyingEnemyActive[i] = true;
+        }
     }
     public void drawEnemies() {
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             for (int i = 0; i < spikeEnemyPositionX.size(); i++) {
                 translate(spikeEnemyPositionX.get(i), spikeEnemyPositionY.get(i));
                 drawImage(spikeEnemy,-10,-40,40,60);
@@ -871,15 +908,29 @@ public class Main extends GameEngine {
                     restoreLastTransform();
                 }
             }
+            for (int i = 0; i < rollingEnemyPositionX.size(); i++) {
+                if(rollingEnemyActive[i]) {
+                    translate(rollingEnemyPositionX.get(i)-ballRadius, rollingEnemyPositionY.get(i)-ballRadius);
+                    drawImage(rollingEnemy,-20,-20,ballRadius*2,ballRadius*2);
+                    restoreLastTransform();
+                }
+            }
+            for (int i = 0; i < flyingEnemyPositionX.size(); i++) {
+                if(flyingEnemyActive[i]) {
+                    translate(flyingEnemyPositionX.get(i)-ballRadius, flyingEnemyPositionY.get(i)-ballRadius);
+                    drawImage(flyingEnemy,-20,-20,ballRadius*2,ballRadius*2);
+                    restoreLastTransform();
+                }
+            }
         }
     }
     ArrayList<Double> temp;
-    double[] apex, startY;
+    double[] bounceEnemyApex, bounceEnemyStartY;
     public void updateEnemies(double dt) {
         enemies = new ArrayList<>();
-        apex = new double[10];
-        startY = new double[10];
-        if (gameLevel <= 2) {
+        bounceEnemyApex = new double[10];
+        bounceEnemyStartY = new double[10];
+        if (gameLevel <= 3) {
             for (int i = 0; i < spikeEnemyPositionY.size(); i++) {
                 spikeEnemyPositionX.set(i, spikeEnemyPositionX.get(i) - gameSpeed * dt);
                 if (spikeEnemyPositionX.get(i) < width){
@@ -899,12 +950,12 @@ public class Main extends GameEngine {
                 for (ArrayList<Double> platform : platforms) {
                     if(platform.get(1)<=bounceEnemyPositionX.get(i)+ballRadius
                             && platform.get(1)+platform.get(3)>=bounceEnemyPositionX.get(i)-ballRadius){
-                        apex[i] = platform.get(2)-bounceHeight+ballRadius;
-                        startY[i] = platform.get(2);
-                        if(bounceEnemyPositionY.get(i)>= startY[i]){
+                        bounceEnemyApex[i] = platform.get(2)-bounceHeight+ballRadius;
+                        bounceEnemyStartY[i] = platform.get(2);
+                        if(bounceEnemyPositionY.get(i)>= bounceEnemyStartY[i]){
                             bounceEnemyVelocityY=150;
                         }
-                        if(bounceEnemyPositionY.get(i)<=apex[i]){
+                        if(bounceEnemyPositionY.get(i)<= bounceEnemyApex[i]){
                             bounceEnemyVelocityY =-150;
                         }
                     }
@@ -915,6 +966,32 @@ public class Main extends GameEngine {
                     temp.add(1.0);
                     temp.add(bounceEnemyPositionX.get(i));
                     temp.add(bounceEnemyPositionY.get(i));
+                    temp.add(40.0);
+                    temp.add(40.0);
+                    enemies.add(temp);
+                }
+            }
+            for (int i = 0; i < rollingEnemyPositionY.size(); i++) {
+                rollingEnemyPositionX.set(i, rollingEnemyPositionX.get(i) - gameSpeed * dt);
+                //Add rolling physics
+                if (rollingEnemyPositionX.get(i) < width&&rollingEnemyPositionX.get(i)>0) {
+                    temp = new ArrayList<>();
+                    temp.add(1.0);
+                    temp.add(rollingEnemyPositionX.get(i));
+                    temp.add(rollingEnemyPositionY.get(i));
+                    temp.add(40.0);
+                    temp.add(40.0);
+                    enemies.add(temp);
+                }
+            }
+            for (int i = 0; i < flyingEnemyPositionY.size(); i++) {
+                flyingEnemyPositionX.set(i, flyingEnemyPositionX.get(i) - gameSpeed * dt);
+                //Add flying physics
+                if (flyingEnemyPositionX.get(i) < width&&flyingEnemyPositionX.get(i)>0) {
+                    temp = new ArrayList<>();
+                    temp.add(1.0);
+                    temp.add(flyingEnemyPositionX.get(i));
+                    temp.add(flyingEnemyPositionY.get(i));
                     temp.add(40.0);
                     temp.add(40.0);
                     enemies.add(temp);
@@ -1083,15 +1160,17 @@ public class Main extends GameEngine {
         return new int[]{0, 0};
     }
     public void checkCollisions(){
-            checkLevelFinish();
-            checkBallonSpikes();
-            if (enemies != null) {
-                checkEnemyCollision();
-            }
-            checkCoinCollision();
+        checkLevelFinish();
+        checkBallonSpikes();
+        if (enemies != null) {
+            checkEnemyCollision();
+        }
+        checkCoinCollision();
     }
     public void checkEnemyCollision(){
-        int counter = -1;
+        int bounceEnemyCounter = -1;
+        int rollingEnemyCounter = -1;
+        int flyingEnemyCounter = -1;
         for(ArrayList<Double> enemy : enemies) {
             AffineTransform t = new AffineTransform();
             t.translate(enemy.get(1), enemy.get(2));
@@ -1109,12 +1188,45 @@ public class Main extends GameEngine {
                         state = GameState.GameOver;
                     }
                 }
-            } else if (enemy.get(0) == 1) {
-                counter++;
-                if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && bounceEnemyActive[counter]){
+            }
+            if (enemy.get(0) == 1) {
+                bounceEnemyCounter++;
+                if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && bounceEnemyActive[bounceEnemyCounter]){
                     if(heavy){
                         enemy.set(1, enemy.get(1)*-1);
-                        bounceEnemyActive[counter] = false;
+                        bounceEnemyActive[bounceEnemyCounter] = false;
+                        score++;
+                    }else {
+                        if (lives > 0) {
+                            respawnBall(enemy.get(1));
+                        } else {
+                            state = GameState.GameOver;
+                        }
+                    }
+                }
+            }
+            if (enemy.get(0) == 2) {
+                rollingEnemyCounter++;
+                if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && rollingEnemyActive[rollingEnemyCounter]){
+                    if(heavy){
+                        enemy.set(1, enemy.get(1)*-1);
+                        rollingEnemyActive[rollingEnemyCounter] = false;
+                        score++;
+                    }else {
+                        if (lives > 0) {
+                            respawnBall(enemy.get(1));
+                        } else {
+                            state = GameState.GameOver;
+                        }
+                    }
+                }
+            }
+            if (enemy.get(0) == 3) {
+                flyingEnemyCounter++;
+                if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && flyingEnemyActive[flyingEnemyCounter]){
+                    if(heavy){
+                        enemy.set(1, enemy.get(1)*-1);
+                        flyingEnemyActive[flyingEnemyCounter] = false;
                         score++;
                     }else {
                         if (lives > 0) {
@@ -1138,6 +1250,7 @@ public class Main extends GameEngine {
     }
     public void checkLevelFinish(){
         if(ballPositionX - ballRadius >= flagPositionX){
+            gameLevel++;
             state = GameState.LevelComplete;
         }
     }
@@ -1188,7 +1301,7 @@ public class Main extends GameEngine {
     Image spike;
     public void initSpkies(){
         spike = loadImage("Images/Sprites/spike.png");
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             spikePositionY = new double[13];
             spikePositionX = new double[13];
             for (int i = 0; i < 13; i++) {
@@ -1198,7 +1311,7 @@ public class Main extends GameEngine {
         }
     }
     public void drawSpikes(){
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             for (int i = 0; i < 13; i++) {
                 saveCurrentTransform();
                 translate(spikePositionX[i], spikePositionY[i]);
@@ -1208,7 +1321,7 @@ public class Main extends GameEngine {
         }
     }
     public void updateSpikes(double dt){
-        if (gameLevel <=2) {
+        if (gameLevel <=3) {
             for (int i = 0; i < 13; i++) {
                 spikePositionX[i] -= gameSpeed * dt;
                 spikePositionY[i] = 490;
@@ -1217,7 +1330,7 @@ public class Main extends GameEngine {
         }
     }
     public void checkOutScreen(){
-        if (gameLevel <=2) {
+        if (gameLevel <=3) {
             for (int i = 0; i < 13; i++) {
                 if (spikePositionX[i] < -40) {
                     spikePositionX[i] += width + 20;
@@ -1238,10 +1351,13 @@ public class Main extends GameEngine {
         }else if(gameLevel==2){
             flagPositionX = 2700;
             flagPositionY = 320;
+        }else if(gameLevel==3){
+            flagPositionX = 2700;
+            flagPositionY = 220;
         }
     }
     public void drawFlag(){
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             saveCurrentTransform();
             changeColor(Color.PINK);
             translate(flagPositionX, flagPositionY);
@@ -1250,7 +1366,7 @@ public class Main extends GameEngine {
         }
     }
     public void updateFlag(double dt){
-        if(gameLevel<=2) {
+        if(gameLevel<=3) {
             flagPositionX -= gameSpeed * dt;
         }
     }
@@ -1278,21 +1394,33 @@ public class Main extends GameEngine {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            while (coinRead.hasNext()) {
-                currentLine = coinRead.nextLine().split(",");
-                if (currentLine[0].equals("0")) {
-                    coinPositionX.add(Double.parseDouble(currentLine[1]));
-                    coinPositionY.add(Double.parseDouble(currentLine[2]));
-                }
+        }else if (gameLevel == 2) {
+            try {
+                coinRead = new Scanner(new File("coinPositionsLevel2.txt"));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
-            for (int i = 0; i < coinPositionX.size(); i++) {
-                activeCoin[i] = true;
+        }else if (gameLevel == 3) {
+            try {
+                coinRead = new Scanner(new File("coinPositionsLevel3.txt"));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
+        }
+        while (coinRead.hasNext()) {
+            currentLine = coinRead.nextLine().split(",");
+            if (currentLine[0].equals("0")) {
+                coinPositionX.add(Double.parseDouble(currentLine[1]));
+                coinPositionY.add(Double.parseDouble(currentLine[2]));
+            }
+        }
+        for (int i = 0; i < coinPositionX.size(); i++) {
+            activeCoin[i] = true;
         }
     }
     int count = 0;
     public void drawCoins() {
-        if(gameLevel==1) {
+        if(gameLevel<=3) {
             for (int i = 0; i < coinPositionX.size(); i++) {
                 if(activeCoin[i]==true) {
                     translate(coinPositionX.get(i), coinPositionY.get(i));
@@ -1308,7 +1436,7 @@ public class Main extends GameEngine {
         }
     }
     public void updateCoins(double dt) {
-        if (gameLevel == 1) {
+        if (gameLevel <= 3) {
             for (int i = 0; i < coinPositionX.size(); i++) {
                 if(activeCoin[i]==true) {
                     coinPositionX.set(i, coinPositionX.get(i) - gameSpeed * dt);
