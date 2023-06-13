@@ -1428,7 +1428,7 @@ public class Main extends GameEngine {
     ArrayList<Image> coinFrames;
     public void initCoins() {
         coinFrames = new ArrayList<>();
-        activeCoin = new boolean[5];
+        activeCoin = new boolean[10];
         coinSpriteSheet = loadImage("Images/Sprites/coinspritesheet.png");
         coinPositionX = new ArrayList<>();
         coinPositionY = new ArrayList<>();
