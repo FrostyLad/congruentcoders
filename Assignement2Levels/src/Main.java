@@ -8,6 +8,8 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 
@@ -817,18 +819,16 @@ public class Main extends GameEngine {
     //*******************************************************
     //***********************Enemies*************************
     //*******************************************************
-    ArrayList<Double> spikeEnemyPositionX;
-    ArrayList<Double> spikeEnemyPositionY;
-    ArrayList<Double> bounceEnemyPositionX;
-    ArrayList<Double> bounceEnemyPositionY;
-    ArrayList<Double> rollingEnemyPositionX;
-    ArrayList<Double> rollingEnemyPositionY;
-    ArrayList<Double> flyingEnemyPositionX;
-    ArrayList<Double> flyingEnemyPositionY;
+
+    ArrayList<Double> spikeEnemyPositionX, spikeEnemyPositionY, bounceEnemyPositionX, bounceEnemyPositionY,
+            rollingEnemyPositionX, rollingEnemyPositionY, flyingEnemyPositionX, flyingEnemyPositionY,
+            flyingEnemyStart, rollingEnemyAngle,flyingEnemyVelocityX, flyingEnemyVelocityY, points;
     Image spikeEnemy, bounceEnemy, rollingEnemy,flyingEnemy;
     boolean[] bounceEnemyActive, rollingEnemyActive,flyingEnemyActive;
-    ArrayList<ArrayList<Double>> enemies;
+    ArrayList<ArrayList<Double>> enemies, square;
     double bounceEnemyVelocityY,bounceHeight;
+    ArrayList<Integer> flyingEnemyLock;
+    ArrayList<ArrayList<ArrayList<Double>>> flyingSquare;
     public void initEnemies(){
         bounceHeight = 100;
         spikeEnemy = loadImage("Images/Sprites/spikeenemy.png");
@@ -841,29 +841,30 @@ public class Main extends GameEngine {
         bounceEnemyPositionY = new ArrayList<>();
         rollingEnemyPositionX = new ArrayList<>();
         rollingEnemyPositionY = new ArrayList<>();
+        rollingEnemyAngle = new ArrayList<>();
         flyingEnemyPositionX = new ArrayList<>();
         flyingEnemyPositionY = new ArrayList<>();
+        flyingEnemyStart = new ArrayList<>();
+        flyingSquare = new ArrayList<>();
+        flyingEnemyVelocityX = new ArrayList<>();
+        flyingEnemyVelocityY = new ArrayList<>();
         bounceEnemyActive = new boolean[10];
         rollingEnemyActive = new boolean[10];
         flyingEnemyActive = new boolean[10];
-        if(gameLevel==1) {
-            try {
+        flyingEnemyLock = new ArrayList<>();
+        points = new ArrayList<>();
+        square = new ArrayList<>();
+        try {
+            if (gameLevel == 1) {
                 enemyRead = new Scanner(new File("enemyPositions.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (gameLevel==2) {
-            try {
+
+            } else if (gameLevel == 2) {
                 enemyRead = new Scanner(new File("enemyPositionsLevel2.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else if (gameLevel==3) {
-            try {
+            } else if (gameLevel == 3) {
                 enemyRead = new Scanner(new File("enemyPositionsLevel3.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
             }
+        }catch(FileNotFoundException e){
+                throw new RuntimeException(e);
         }
         while (enemyRead.hasNext()) {
             currentLine = enemyRead.nextLine().split(",");
@@ -878,9 +879,37 @@ public class Main extends GameEngine {
                 }case "2" -> {
                     rollingEnemyPositionX.add(Double.parseDouble(currentLine[1]));
                     rollingEnemyPositionY.add(Double.parseDouble(currentLine[2]));
+                    rollingEnemyAngle.add(0.0);
                 }case "3" -> {
-                    flyingEnemyPositionX.add(Double.parseDouble(currentLine[1]));
-                    flyingEnemyPositionY.add(Double.parseDouble(currentLine[2]));
+                    double startx = Double.parseDouble(currentLine[1]);
+                    double starty = Double.parseDouble(currentLine[2]) - 100;
+                    flyingEnemyPositionX.add(startx);
+                    flyingEnemyPositionY.add(starty);
+                    flyingEnemyStart.add(Double.parseDouble(String.valueOf(starty)));
+                    Random r = new Random();
+                    square = new ArrayList<>();
+
+                    flyingEnemyVelocityX.add(Double.parseDouble(String.valueOf(r.nextInt(20) - 10)));
+                    flyingEnemyVelocityY.add(Double.parseDouble(String.valueOf(r.nextInt(20) - 10)));
+
+                    points = new ArrayList<>();
+                    points.add(startx-60);
+                    points.add(starty-60);
+                    square.add(points);
+                    points = new ArrayList<>();
+                    points.add(startx-60);
+                    points.add(starty+60);
+                    square.add(points);
+                    points = new ArrayList<>();
+                    points.add(startx+60);
+                    points.add(starty-60);
+                    square.add(points);
+                    points = new ArrayList<>();
+                    points.add(startx+60);
+                    points.add(starty+60);
+                    square.add(points);
+                    flyingSquare.add(square);
+
                 }
             }
         }
@@ -911,6 +940,7 @@ public class Main extends GameEngine {
             for (int i = 0; i < rollingEnemyPositionX.size(); i++) {
                 if(rollingEnemyActive[i]) {
                     translate(rollingEnemyPositionX.get(i)-ballRadius, rollingEnemyPositionY.get(i)-ballRadius);
+                    rotate(rollingEnemyAngle.get(i));
                     drawImage(rollingEnemy,-20,-20,ballRadius*2,ballRadius*2);
                     restoreLastTransform();
                 }
@@ -920,6 +950,7 @@ public class Main extends GameEngine {
                     translate(flyingEnemyPositionX.get(i)-ballRadius, flyingEnemyPositionY.get(i)-ballRadius);
                     drawImage(flyingEnemy,-20,-20,ballRadius*2,ballRadius*2);
                     restoreLastTransform();
+
                 }
             }
         }
@@ -973,28 +1004,46 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < rollingEnemyPositionY.size(); i++) {
                 rollingEnemyPositionX.set(i, rollingEnemyPositionX.get(i) - gameSpeed * dt);
-                //Add rolling physics
-                if (rollingEnemyPositionX.get(i) < width&&rollingEnemyPositionX.get(i)>0) {
+                if (rollingEnemyPositionX.get(i) - ballRadius < width&&rollingEnemyPositionX.get(i) + ballRadius > 0) {
+                    rollingEnemyPositionX.set(i, rollingEnemyPositionX.get(i) - 1.5);
+                    rollingEnemyAngle.set(i, rollingEnemyAngle.get(i) - 250*dt);
                     temp = new ArrayList<>();
-                    temp.add(1.0);
+                    temp.add(2.0);
                     temp.add(rollingEnemyPositionX.get(i));
                     temp.add(rollingEnemyPositionY.get(i));
                     temp.add(40.0);
                     temp.add(40.0);
+                    temp.add(rollingEnemyAngle.get(i));
                     enemies.add(temp);
                 }
             }
             for (int i = 0; i < flyingEnemyPositionY.size(); i++) {
-                flyingEnemyPositionX.set(i, flyingEnemyPositionX.get(i) - gameSpeed * dt);
-                //Add flying physics
-                if (flyingEnemyPositionX.get(i) < width&&flyingEnemyPositionX.get(i)>0) {
-                    temp = new ArrayList<>();
-                    temp.add(1.0);
-                    temp.add(flyingEnemyPositionX.get(i));
-                    temp.add(flyingEnemyPositionY.get(i));
-                    temp.add(40.0);
-                    temp.add(40.0);
-                    enemies.add(temp);
+                if (flyingEnemyActive[i]) {
+
+                    flyingEnemyPositionX.set(i, flyingEnemyPositionX.get(i) - gameSpeed * dt);
+
+                    for (int n = 0; n < 4; n++) {
+                        flyingSquare.get(i).get(n).set(0, flyingSquare.get(i).get(n).get(0) - gameSpeed * dt);
+                    }
+                    if (flyingEnemyPositionX.get(i) - ballRadius * 2 < width && flyingEnemyPositionX.get(i) + ballRadius > 0) {
+                        flyingEnemyPositionX.set(i, flyingEnemyPositionX.get(i) + flyingEnemyVelocityX.get(i) * dt * 30);
+                        flyingEnemyPositionY.set(i, flyingEnemyPositionY.get(i) + flyingEnemyVelocityY.get(i) * dt * 30);
+
+                        if (flyingEnemyPositionX.get(i) >= flyingSquare.get(i).get(3).get(0) ||
+                                flyingEnemyPositionX.get(i) <= flyingSquare.get(i).get(0).get(0))
+                            flyingEnemyVelocityX.set(i, flyingEnemyVelocityX.get(i) * -1);
+                        if (flyingEnemyPositionY.get(i) >= flyingSquare.get(i).get(1).get(1) ||
+                                flyingEnemyPositionY.get(i) <= flyingSquare.get(i).get(0).get(1))
+                            flyingEnemyVelocityY.set(i, flyingEnemyVelocityY.get(i) * -1);
+
+                        temp = new ArrayList<>();
+                        temp.add(3.0);
+                        temp.add(flyingEnemyPositionX.get(i));
+                        temp.add(flyingEnemyPositionY.get(i));
+                        temp.add(40.0);
+                        temp.add(40.0);
+                        enemies.add(temp);
+                    }
                 }
             }
         }
@@ -1209,7 +1258,7 @@ public class Main extends GameEngine {
                 rollingEnemyCounter++;
                 if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && rollingEnemyActive[rollingEnemyCounter]){
                     if(heavy){
-                        enemy.set(1, enemy.get(1)*-1);
+                        enemy.set(1, -26.0);
                         rollingEnemyActive[rollingEnemyCounter] = false;
                         score++;
                     }else {
@@ -1225,7 +1274,7 @@ public class Main extends GameEngine {
                 flyingEnemyCounter++;
                 if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && flyingEnemyActive[flyingEnemyCounter]){
                     if(heavy){
-                        enemy.set(1, enemy.get(1)*-1);
+                        flyingEnemyPositionY.set(flyingEnemyCounter, -35.0);
                         flyingEnemyActive[flyingEnemyCounter] = false;
                         score++;
                     }else {
