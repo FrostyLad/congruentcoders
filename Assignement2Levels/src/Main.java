@@ -8,7 +8,6 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -359,6 +358,11 @@ public class Main extends GameEngine {
             drawSolidCircle(25,240, 15);
         }
     }
+    AudioClip level1BackgroundAudioEasy,level1BackgroundAudioNormal,level1BackgroundAudioHard,
+            level2BackgroundAudioEasy, level2BackgroundAudioNormal, level2BackgroundAudioHard,
+            level3BackgroundAudioEasy,level3BackgroundAudioNormal,level3BackgroundAudioHard;
+    AudioClip ballPopAudio, jumpPadAudio, killEnemyAudio;
+    AudioClip currentBackgroundAudio;
     public void initGame(){
         if (difficulty == Difficulty.Easy){
             gameSpeed = 150;
@@ -366,6 +370,52 @@ public class Main extends GameEngine {
             gameSpeed = 200;
         }else if(difficulty == Difficulty.Hard){
             gameSpeed = 250;
+        }
+        ballPopAudio = loadAudio("Sounds/SoundEffects/BallPop.wav");
+        jumpPadAudio = loadAudio("Sounds/SoundEffects/Jump_Pad.wav");
+        killEnemyAudio = loadAudio("Sounds/SoundEffects/Kill_Enemy.wav");
+        level1BackgroundAudioEasy = loadAudio("Sounds/BackgroundMusic/Beach_Theme_Slow.wav");
+        level1BackgroundAudioNormal = loadAudio("Sounds/BackgroundMusic/Beach_Theme.wav");
+        level1BackgroundAudioHard = loadAudio("Sounds/BackgroundMusic/Beach_Theme_Fast.wav");
+        level2BackgroundAudioEasy = loadAudio("Sounds/BackgroundMusic/Desert_Theme_Slow.wav");
+        level2BackgroundAudioNormal = loadAudio("Sounds/BackgroundMusic/Desert_Theme.wav");
+        level2BackgroundAudioHard = loadAudio("Sounds/BackgroundMusic/Desert_Theme_Fast.wav");
+        level3BackgroundAudioEasy = loadAudio("Sounds/BackgroundMusic/Castle_Theme_Slow.wav");
+        level3BackgroundAudioNormal = loadAudio("Sounds/BackgroundMusic/Castle_Theme.wav");
+        level3BackgroundAudioHard = loadAudio("Sounds/BackgroundMusic/Castle_Theme_Fast.wav");
+        if(gameLevel == 1){
+            if (difficulty == Difficulty.Easy){
+                startAudioLoop(level1BackgroundAudioEasy);
+                currentBackgroundAudio = level1BackgroundAudioEasy;
+            }else if(difficulty == Difficulty.Normal){
+                startAudioLoop(level1BackgroundAudioNormal);
+                currentBackgroundAudio = level1BackgroundAudioNormal;
+            }else if(difficulty == Difficulty.Hard){
+                startAudioLoop(level1BackgroundAudioHard);
+                currentBackgroundAudio = level1BackgroundAudioHard;
+            }
+        }else if(gameLevel == 2){
+            if (difficulty == Difficulty.Easy){
+                startAudioLoop(level2BackgroundAudioEasy);
+                currentBackgroundAudio = level2BackgroundAudioEasy;
+            }else if(difficulty == Difficulty.Normal){
+                startAudioLoop(level2BackgroundAudioNormal);
+                currentBackgroundAudio = level2BackgroundAudioNormal;
+            }else if(difficulty == Difficulty.Hard){
+                startAudioLoop(level2BackgroundAudioHard);
+                currentBackgroundAudio = level2BackgroundAudioHard;
+            }
+        }else if(gameLevel == 3){
+            if (difficulty == Difficulty.Easy){
+                currentBackgroundAudio = level3BackgroundAudioEasy;
+                startAudioLoop(level3BackgroundAudioEasy);
+            }else if(difficulty == Difficulty.Normal){
+                currentBackgroundAudio = level3BackgroundAudioNormal;
+                startAudioLoop(level3BackgroundAudioNormal);
+            }else if(difficulty == Difficulty.Hard){
+                startAudioLoop(level3BackgroundAudioHard);
+                currentBackgroundAudio = level3BackgroundAudioHard;
+            }
         }
         score = 0;
         lives = gameLives;
@@ -419,6 +469,7 @@ public class Main extends GameEngine {
                     }
                 }
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    stopAudioLoop(currentBackgroundAudio);
                     state = GameState.Menu;
                 }
             }else {
@@ -864,7 +915,7 @@ public class Main extends GameEngine {
                 enemyRead = new Scanner(new File("enemyPositionsLevel3.txt"));
             }
         }catch(FileNotFoundException e){
-                throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
         while (enemyRead.hasNext()) {
             currentLine = enemyRead.nextLine().split(",");
@@ -1137,6 +1188,7 @@ public class Main extends GameEngine {
                     if (lives > 0) {
                         respawnBall(0.0);
                     } else {
+                        stopAudioLoop(currentBackgroundAudio);
                         state = GameState.GameOver;
                     }
                 }
@@ -1231,9 +1283,11 @@ public class Main extends GameEngine {
                         distance(ballPositionX, ballPositionY, pts[4], pts[5]) <= ballRadius ||
                         distance(ballPositionX, ballPositionY, pts[6], pts[7]) <= ballRadius ||
                         distance(ballPositionX, ballPositionY, pts[8], pts[9]) <= ballRadius) {
+                    playAudio(ballPopAudio);
                     if (lives > 0) {
                         respawnBall(enemy.get(1));
                     } else {
+                        stopAudioLoop(currentBackgroundAudio);
                         state = GameState.GameOver;
                     }
                 }
@@ -1244,11 +1298,14 @@ public class Main extends GameEngine {
                     if(heavy){
                         enemy.set(1, enemy.get(1)*-1);
                         bounceEnemyActive[bounceEnemyCounter] = false;
+                        playAudio(killEnemyAudio);
                         score++;
                     }else {
+                        playAudio(ballPopAudio);
                         if (lives > 0) {
                             respawnBall(enemy.get(1));
                         } else {
+                            stopAudioLoop(currentBackgroundAudio);
                             state = GameState.GameOver;
                         }
                     }
@@ -1260,11 +1317,14 @@ public class Main extends GameEngine {
                     if(heavy){
                         enemy.set(1, -26.0);
                         rollingEnemyActive[rollingEnemyCounter] = false;
+                        playAudio(killEnemyAudio);
                         score++;
                     }else {
+                        playAudio(ballPopAudio);
                         if (lives > 0) {
                             respawnBall(enemy.get(1));
                         } else {
+                            stopAudioLoop(currentBackgroundAudio);
                             state = GameState.GameOver;
                         }
                     }
@@ -1276,11 +1336,14 @@ public class Main extends GameEngine {
                     if(heavy){
                         flyingEnemyPositionY.set(flyingEnemyCounter, -35.0);
                         flyingEnemyActive[flyingEnemyCounter] = false;
+                        playAudio(killEnemyAudio);
                         score++;
                     }else {
+                        playAudio(ballPopAudio);
                         if (lives > 0) {
                             respawnBall(enemy.get(1));
                         } else {
+                            stopAudioLoop(currentBackgroundAudio);
                             state = GameState.GameOver;
                         }
                     }
@@ -1290,9 +1353,11 @@ public class Main extends GameEngine {
     }
     public void checkBallonSpikes(){
         if (ballPositionY>=height()-70){
+            playAudio(ballPopAudio);
             if(lives>0){
                 respawnBall(0.0);
             }else {
+                stopAudioLoop(currentBackgroundAudio);
                 state = GameState.GameOver;
             }
         }
@@ -1300,6 +1365,7 @@ public class Main extends GameEngine {
     public void checkLevelFinish(){
         if(ballPositionX - ballRadius >= flagPositionX){
             gameLevel++;
+            stopAudioLoop(currentBackgroundAudio);
             state = GameState.LevelComplete;
         }
     }
@@ -1398,10 +1464,10 @@ public class Main extends GameEngine {
             flagPositionX = 15950;
             flagPositionY = 220;
         }else if(gameLevel==2){
-            flagPositionX = 2700;
+            flagPositionX = 17500;
             flagPositionY = 320;
         }else if(gameLevel==3){
-            flagPositionX = 2700;
+            flagPositionX = 15950;
             flagPositionY = 220;
         }
     }
