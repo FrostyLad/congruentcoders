@@ -30,7 +30,6 @@ public class Main extends GameEngine {
     Image ballImage, levelOneBackground, levelTwoBackground, levelThreeBackground;
     boolean menuPlaying;
     public void init() {
-        //backgroundVolume = -1000; /** ONLY FOR TESTING **/
         ballImage = loadImage("Images/Sprites/ball.png");
         levelOneBackground = loadImage("Images/BackgroundImages/BeachBackground.png");
         levelTwoBackground = loadImage("Images/BackgroundImages/DesertBackground.png");
