@@ -562,20 +562,16 @@ public class Main extends GameEngine {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     stopAudioLoop(currentBackgroundAudio);
                     if (backgroundVolume > -100) {
-                        if (backgroundVolume > -100) {
                             menuPlaying = true;
                             startAudioLoop(menuAudio, backgroundVolume);
-                        }
                     }
                     state = GameState.Menu;
                 }
             }else {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     if (backgroundVolume > -100) {
-                        if (backgroundVolume > -100) {
                             menuPlaying = true;
                             startAudioLoop(menuAudio, backgroundVolume);
-                        }
                     }
                     state = GameState.Menu;
                 }
@@ -738,10 +734,8 @@ public class Main extends GameEngine {
                     state = GameState.Play;
                 }else if(levelCompOption == 1){
                     if (backgroundVolume > -100) {
-                        if (backgroundVolume > -100) {
-                            menuPlaying = true;
-                            startAudioLoop(menuAudio, backgroundVolume);
-                        }
+                        menuPlaying = true;
+                        startAudioLoop(menuAudio, backgroundVolume);
                     }
                     state = GameState.Menu;
                 }
@@ -1154,7 +1148,8 @@ public class Main extends GameEngine {
                 if(bounceEnemyActive[i]) {
                     translate(bounceEnemyPositionX.get(i)-ballRadius, bounceEnemyPositionY.get(i)-ballRadius);
                     drawImage(bounceEnemy,-20,-20,ballRadius*2,ballRadius*2);
-
+                    changeColor(red);
+                    drawRectangle(-20, -20, 40, 40, 2);
                     restoreLastTransform();
                 }
             }
@@ -1184,23 +1179,20 @@ public class Main extends GameEngine {
         if (gameLevel <= 3) {
             for (int i = 0; i < spikeEnemyPositionY.size(); i++) {
                 spikeEnemyPositionX.set(i, spikeEnemyPositionX.get(i) - gameSpeed * dt);
-                if (spikeEnemyPositionX.get(i) < width){
-                    if (spikeEnemyPositionY.get(i) < width) {
-                        temp = new ArrayList<>();
-                        temp.add(0.0);
-                        temp.add(spikeEnemyPositionX.get(i));
-                        temp.add(spikeEnemyPositionY.get(i));
-                        temp.add(40.0);
-                        temp.add(60.0);
-                        enemies.add(temp);
-                    }
-                }
+                temp = new ArrayList<>();
+                temp.add(0.0);
+                temp.add(spikeEnemyPositionX.get(i));
+                temp.add(spikeEnemyPositionY.get(i));
+                temp.add(40.0);
+                temp.add(60.0);
+                enemies.add(temp);
+
             }
             for (int i = 0; i < bounceEnemyPositionY.size(); i++) {
                 bounceEnemyPositionX.set(i, bounceEnemyPositionX.get(i) - gameSpeed * dt);
-                if (bounceEnemyActive[i] && bounceEnemyPositionX.get(i) - ballRadius < width+20) {
+                if (bounceEnemyActive[i]) {
                     for (ArrayList<Double> platform : platforms) {
-                        if (platform.get(1) <= bounceEnemyPositionX.get(i) + ballRadius
+                        if (platform.get(1) <= bounceEnemyPositionX.get(i) + ballRadius  && bounceEnemyPositionX.get(i) - ballRadius < width
                                 && platform.get(1) + platform.get(3) >= bounceEnemyPositionX.get(i) - ballRadius) {
                             bounceEnemyApex[i] = platform.get(2) - bounceHeight + ballRadius;
                             bounceEnemyStartY[i] = platform.get(2);
@@ -1213,15 +1205,13 @@ public class Main extends GameEngine {
                         }
                     }
                     bounceEnemyPositionY.set(i, bounceEnemyPositionY.get(i) - bounceEnemyVelocityY * dt);
-                    if (bounceEnemyPositionX.get(i) < width && bounceEnemyPositionX.get(i) > 0) {
-                        temp = new ArrayList<>();
-                        temp.add(1.0);
-                        temp.add(bounceEnemyPositionX.get(i));
-                        temp.add(bounceEnemyPositionY.get(i));
-                        temp.add(40.0);
-                        temp.add(40.0);
-                        enemies.add(temp);
-                    }
+                    temp = new ArrayList<>();
+                    temp.add(1.0);
+                    temp.add(bounceEnemyPositionX.get(i));
+                    temp.add(bounceEnemyPositionY.get(i));
+                    temp.add(40.0);
+                    temp.add(40.0);
+                    enemies.add(temp);
                 }
             }
             for (int i = 0; i < rollingEnemyPositionY.size(); i++) {
@@ -1230,15 +1220,15 @@ public class Main extends GameEngine {
                     if (rollingEnemyPositionX.get(i) - ballRadius < width && rollingEnemyPositionX.get(i) + ballRadius > 0) {
                         rollingEnemyPositionX.set(i, rollingEnemyPositionX.get(i) - 1.5);
                         rollingEnemyAngle.set(i, rollingEnemyAngle.get(i) - 250 * dt);
-                        temp = new ArrayList<>();
-                        temp.add(2.0);
-                        temp.add(rollingEnemyPositionX.get(i));
-                        temp.add(rollingEnemyPositionY.get(i));
-                        temp.add(40.0);
-                        temp.add(40.0);
-                        temp.add(rollingEnemyAngle.get(i));
-                        enemies.add(temp);
                     }
+                    temp = new ArrayList<>();
+                    temp.add(2.0);
+                    temp.add(rollingEnemyPositionX.get(i));
+                    temp.add(rollingEnemyPositionY.get(i));
+                    temp.add(40.0);
+                    temp.add(40.0);
+                    temp.add(rollingEnemyAngle.get(i));
+                    enemies.add(temp);
                 }
             }
             for (int i = 0; i < flyingEnemyPositionY.size(); i++) {
@@ -1257,15 +1247,14 @@ public class Main extends GameEngine {
                         if (flyingEnemyPositionY.get(i) >= flyingSquare.get(i).get(1).get(1) ||
                                 flyingEnemyPositionY.get(i) <= flyingSquare.get(i).get(0).get(1))
                             flyingEnemyVelocityY.set(i, flyingEnemyVelocityY.get(i) * -1);
-
-                        temp = new ArrayList<>();
-                        temp.add(3.0);
-                        temp.add(flyingEnemyPositionX.get(i));
-                        temp.add(flyingEnemyPositionY.get(i));
-                        temp.add(40.0);
-                        temp.add(40.0);
-                        enemies.add(temp);
                     }
+                    temp = new ArrayList<>();
+                    temp.add(3.0);
+                    temp.add(flyingEnemyPositionX.get(i));
+                    temp.add(flyingEnemyPositionY.get(i));
+                    temp.add(40.0);
+                    temp.add(40.0);
+                    enemies.add(temp);
                 }
             }
         }
@@ -1459,7 +1448,6 @@ public class Main extends GameEngine {
         int rollingEnemyCounter = -1;
         int flyingEnemyCounter = -1;
         for(ArrayList<Double> enemy : enemies) {
-
             if (enemy.get(0) == 0) {
                 AffineTransform t = new AffineTransform();
                 t.translate(enemy.get(1), enemy.get(2));
@@ -1510,7 +1498,7 @@ public class Main extends GameEngine {
                 rollingEnemyCounter++;
                 if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && rollingEnemyActive[rollingEnemyCounter]){
                     if(heavy){
-                        enemy.set(1, -26.0);
+                        rollingEnemyPositionX.set(rollingEnemyCounter, -26.0);
                         rollingEnemyActive[rollingEnemyCounter] = false;
                         playAudio(killRollingEnemyAudio, soundEffectsVolume);
                         score++;
