@@ -26,9 +26,13 @@ public class Main extends GameEngine {
     int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption, score,
             difficultyMenu, livesMenu, livesMenuVert, gameLives, lives,soundEffectsMenu,backgroundMusicMenu, backgroundVolume;
     double gameSpeed;
-    Scanner platformRead, enemyRead,  coinRead;
+    Scanner platformRead, enemyRead, coinRead;
+    Image levelOneBackground, levelTwoBackground, levelThreeBackground;
     public void init() {
         backgroundVolume = -1000; /** ONLY FOR TESTING **/
+        levelOneBackground = loadImage("Images/BackgroundImages/BeachBackground.png");
+        levelTwoBackground = loadImage("Images/BackgroundImages/DesertBackground.png");
+        levelThreeBackground = loadImage("Images/BackgroundImages/CastleBackground.png");
         levelCompOption = 0;
         menuOption = 0;
         exitOption = 0;
@@ -74,7 +78,16 @@ public class Main extends GameEngine {
     }
     public void drawGame(){
         if(gameLevel <= 3) {
-
+            switch (gameLevel) {
+                case 1:
+                    drawImage(levelOneBackground, 0, 0, width, height);
+                    break;
+                case 2:
+                    drawImage(levelTwoBackground, 0, 0, width, height);
+                    break;
+                case 3:
+                    drawImage(levelThreeBackground, 0, 0, width, height);
+            }
             drawSpikes();
             drawEnemies();
             drawBall();
@@ -1195,12 +1208,15 @@ public class Main extends GameEngine {
     double ballPositionX, ballPositionY, ballVelocityX, ballVelocityY, ballAngle;
     Color ballColour;
     Image ballImage,ballHeavyImage,flamesImage;
-    AudioClip ballPopAudio, jumpPadAudio, killEnemyAudio;
+    AudioClip ballPopAudio, jumpPadAudio,killBounceEnemyAudio,killRollingEnemyAudio,killFlyingEnemyAudio, coinAudio;
 
     public void initBall(){
         ballPopAudio = loadAudio("Sounds/SoundEffects/BallPop.wav");
-        jumpPadAudio = loadAudio("Sounds/SoundEffects/Jump_Pad.wav");
-        killEnemyAudio = loadAudio("Sounds/SoundEffects/Kill_Enemy.wav");
+        jumpPadAudio = loadAudio("Sounds/SoundEffects/JumpPad.wav");
+        killBounceEnemyAudio = loadAudio("Sounds/SoundEffects/KillBounceEnemy.wav");
+        killRollingEnemyAudio = loadAudio("Sounds/SoundEffects/KillRollingEnemy.wav");
+        killFlyingEnemyAudio = loadAudio("Sounds/SoundEffects/KillFlyingEnemy.wav");
+        coinAudio = loadAudio("Sounds/SoundEffects/Coin.wav");
         ballImage = loadImage("Images/Sprites/ball.png");
         ballHeavyImage= loadImage("Images/Sprites/BallHeavy.png");
         flamesImage = loadImage("Images/Sprites/Flames.png");
@@ -1276,6 +1292,7 @@ public class Main extends GameEngine {
                     ballVelocityX = -200;
                 }
                 else {
+                    playAudio(ballPopAudio);
                     if (lives > 0) {
                         respawnBall(0.0);
                     } else {
@@ -1293,6 +1310,7 @@ public class Main extends GameEngine {
                     jumpReady = false;
                     canJumpPad++;
                     ballVelocityY = 325 + (Math.abs(ballVelocityY/2.5));
+                    playAudio(jumpPadAudio);
                 }
                 else {
                     canJumpPad++;
@@ -1389,7 +1407,7 @@ public class Main extends GameEngine {
                     if(heavy){
                         enemy.set(1, enemy.get(1)*-1);
                         bounceEnemyActive[bounceEnemyCounter] = false;
-                        playAudio(killEnemyAudio);
+                        playAudio(killBounceEnemyAudio);
                         score++;
                     }else {
                         playAudio(ballPopAudio);
@@ -1408,7 +1426,7 @@ public class Main extends GameEngine {
                     if(heavy){
                         enemy.set(1, -26.0);
                         rollingEnemyActive[rollingEnemyCounter] = false;
-                        playAudio(killEnemyAudio);
+                        playAudio(killRollingEnemyAudio);
                         score++;
                     }else {
                         playAudio(ballPopAudio);
@@ -1427,7 +1445,7 @@ public class Main extends GameEngine {
                     if(heavy){
                         flyingEnemyPositionY.set(flyingEnemyCounter, -35.0);
                         flyingEnemyActive[flyingEnemyCounter] = false;
-                        playAudio(killEnemyAudio);
+                        playAudio(killFlyingEnemyAudio);
                         score++;
                     }else {
                         playAudio(ballPopAudio);
@@ -1464,6 +1482,7 @@ public class Main extends GameEngine {
         for(int i = 0; i< coinPositionX.size(); i++){
             if(distance(ballPositionX,ballPositionY, coinPositionX.get(i), coinPositionY.get(i)) <= ballRadius*2){
                 coinPositionX.set(i, coinPositionX.get(i)*-1);
+                playAudio(coinAudio);
                 activeCoin[i]= false;
                 score++;
             }
