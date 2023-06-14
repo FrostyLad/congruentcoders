@@ -21,12 +21,14 @@ public class Main extends GameEngine {
     //*******************************************************
     enum GameState {Menu, Levels, Play, Exit,GameOver,LevelComplete, Instructions, Options}
     GameState state = GameState.Menu;
-    enum Difficulty {Easy, Normal, Hard};
+    enum Difficulty {Easy, Normal, Hard}
     Difficulty difficulty = Difficulty.Normal;
-    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption, score,difficultyMenu, livesMenu, livesDifficulty, gameLives, lives;
+    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption, score,
+            difficultyMenu, livesMenu, livesMenuVert, gameLives, lives,soundEffectsMenu,backgroundMusicMenu, backgroundVolume;
     double gameSpeed;
     Scanner platformRead, enemyRead,  coinRead;
     public void init() {
+        backgroundVolume = -1000; /** ONLY FOR TESTING **/
         levelCompOption = 0;
         menuOption = 0;
         exitOption = 0;
@@ -36,9 +38,11 @@ public class Main extends GameEngine {
         gameLevel = 1;
         width = 500;
         height = 500;
-        livesDifficulty = 0;
+        livesMenuVert = 0;
         difficultyMenu = 1;
         livesMenu = 1;
+        soundEffectsMenu = 0;
+        backgroundMusicMenu = 0;
         gameLives = 2;
     }
 
@@ -55,7 +59,6 @@ public class Main extends GameEngine {
         }else if(state == GameState.Levels) {
             drawLevels();
         }else if(state == GameState.Play) {
-            // backgrounds go here
             drawGame();
         }else if(state == GameState.Exit){
             drawExit();
@@ -71,6 +74,7 @@ public class Main extends GameEngine {
     }
     public void drawGame(){
         if(gameLevel <= 3) {
+
             drawSpikes();
             drawEnemies();
             drawBall();
@@ -310,6 +314,8 @@ public class Main extends GameEngine {
         changeColor(121,224,238);
         drawText(50, 200, "Difficulty:",30);
         drawText(50, 250, "Lives:",30);
+        drawText(50, 300, "Background Music:",30);
+        drawText(50, 350, "Sound Effects:",30);
         if(difficulty == Difficulty.Easy){
             changeColor(5,191,219);
             drawText(185, 200, "Easy",30);
@@ -317,6 +323,7 @@ public class Main extends GameEngine {
             changeColor(Color.darkGray);
             drawText(185, 200, "Easy",30);
         }
+
         if(difficulty == Difficulty.Normal){
             changeColor(5,191,219);
             drawText(275, 200, "Normal",30);
@@ -330,6 +337,7 @@ public class Main extends GameEngine {
             changeColor(Color.darkGray);
             drawText(400, 200, "Hard",30);
         }
+
         if(livesMenu == 0){
             changeColor(5,191,219);
             drawText(190, 250, "Zero",30);
@@ -337,6 +345,7 @@ public class Main extends GameEngine {
             changeColor(Color.darkGray);
             drawText(190, 250, "Zero",30);
         }
+
         if(livesMenu == 1){
             changeColor(5,191,219);
             drawText(280, 250, "Three",30);
@@ -350,18 +359,53 @@ public class Main extends GameEngine {
             changeColor(Color.darkGray);
             drawText(405, 250, "Five",30);
         }
-        if(livesDifficulty == 0){
+        if(backgroundMusicMenu == 0){
+            changeColor(5,191,219);
+            drawText(320, 300, "On",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(320, 300, "On",30);
+        }
+        if(backgroundMusicMenu == 1){
+            changeColor(5,191,219);
+            drawText(405, 300, "Off",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(405, 300, "Off",30);
+        }
+
+        if(soundEffectsMenu == 0){
+            changeColor(5,191,219);
+            drawText(320, 350, "On",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(320, 350, "On",30);
+        }
+        if(soundEffectsMenu == 1){
+            changeColor(5,191,219);
+            drawText(405, 350, "Off",30);
+        }else{
+            changeColor(Color.darkGray);
+            drawText(405, 350, "Off",30);
+        }
+
+        if(livesMenuVert == 0){
             changeColor(8, 131, 149);
             drawSolidCircle(25,190, 15);
-        }else{
+        }else if(livesMenuVert == 1){
             changeColor(8, 131, 149);
             drawSolidCircle(25,240, 15);
+        } else if (livesMenuVert == 2){
+            changeColor(8, 131, 149);
+            drawSolidCircle(25,290, 15);
+        }else if (livesMenuVert == 3){
+            changeColor(8, 131, 149);
+            drawSolidCircle(25,340, 15);
         }
     }
     AudioClip level1BackgroundAudioEasy,level1BackgroundAudioNormal,level1BackgroundAudioHard,
             level2BackgroundAudioEasy, level2BackgroundAudioNormal, level2BackgroundAudioHard,
             level3BackgroundAudioEasy,level3BackgroundAudioNormal,level3BackgroundAudioHard;
-    AudioClip ballPopAudio, jumpPadAudio, killEnemyAudio;
     AudioClip currentBackgroundAudio;
     public void initGame(){
         if (difficulty == Difficulty.Easy){
@@ -371,9 +415,6 @@ public class Main extends GameEngine {
         }else if(difficulty == Difficulty.Hard){
             gameSpeed = 250;
         }
-        ballPopAudio = loadAudio("Sounds/SoundEffects/BallPop.wav");
-        jumpPadAudio = loadAudio("Sounds/SoundEffects/Jump_Pad.wav");
-        killEnemyAudio = loadAudio("Sounds/SoundEffects/Kill_Enemy.wav");
         level1BackgroundAudioEasy = loadAudio("Sounds/BackgroundMusic/Beach_Theme_Slow.wav");
         level1BackgroundAudioNormal = loadAudio("Sounds/BackgroundMusic/Beach_Theme.wav");
         level1BackgroundAudioHard = loadAudio("Sounds/BackgroundMusic/Beach_Theme_Fast.wav");
@@ -385,35 +426,35 @@ public class Main extends GameEngine {
         level3BackgroundAudioHard = loadAudio("Sounds/BackgroundMusic/Castle_Theme_Fast.wav");
         if(gameLevel == 1){
             if (difficulty == Difficulty.Easy){
-                startAudioLoop(level1BackgroundAudioEasy);
+                startAudioLoop(level1BackgroundAudioEasy, backgroundVolume);
                 currentBackgroundAudio = level1BackgroundAudioEasy;
             }else if(difficulty == Difficulty.Normal){
-                startAudioLoop(level1BackgroundAudioNormal);
+                startAudioLoop(level1BackgroundAudioNormal, backgroundVolume);
                 currentBackgroundAudio = level1BackgroundAudioNormal;
             }else if(difficulty == Difficulty.Hard){
-                startAudioLoop(level1BackgroundAudioHard);
+                startAudioLoop(level1BackgroundAudioHard, backgroundVolume);
                 currentBackgroundAudio = level1BackgroundAudioHard;
             }
         }else if(gameLevel == 2){
             if (difficulty == Difficulty.Easy){
-                startAudioLoop(level2BackgroundAudioEasy);
+                startAudioLoop(level2BackgroundAudioEasy, backgroundVolume);
                 currentBackgroundAudio = level2BackgroundAudioEasy;
             }else if(difficulty == Difficulty.Normal){
-                startAudioLoop(level2BackgroundAudioNormal);
+                startAudioLoop(level2BackgroundAudioNormal, backgroundVolume);
                 currentBackgroundAudio = level2BackgroundAudioNormal;
             }else if(difficulty == Difficulty.Hard){
-                startAudioLoop(level2BackgroundAudioHard);
+                startAudioLoop(level2BackgroundAudioHard, backgroundVolume);
                 currentBackgroundAudio = level2BackgroundAudioHard;
             }
         }else if(gameLevel == 3){
             if (difficulty == Difficulty.Easy){
                 currentBackgroundAudio = level3BackgroundAudioEasy;
-                startAudioLoop(level3BackgroundAudioEasy);
+                startAudioLoop(level3BackgroundAudioEasy, backgroundVolume);
             }else if(difficulty == Difficulty.Normal){
                 currentBackgroundAudio = level3BackgroundAudioNormal;
-                startAudioLoop(level3BackgroundAudioNormal);
+                startAudioLoop(level3BackgroundAudioNormal, backgroundVolume);
             }else if(difficulty == Difficulty.Hard){
-                startAudioLoop(level3BackgroundAudioHard);
+                startAudioLoop(level3BackgroundAudioHard, backgroundVolume);
                 currentBackgroundAudio = level3BackgroundAudioHard;
             }
         }
@@ -635,9 +676,19 @@ public class Main extends GameEngine {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 lives = gameLives;
                 state = GameState.Menu;
+                if(backgroundMusicMenu == 1){
+                    backgroundVolume = -1000;
+                }else{
+                    backgroundVolume = 800;
+                }
+                if(soundEffectsMenu == 1){
+                    soundEffectsMenu = -1000;
+                }else{
+                    soundEffectsMenu = 800;
+                }
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                if (livesDifficulty == 0) {
+                if (livesMenuVert == 0) {
                     if (difficultyMenu == 0) {
                         difficultyMenu += 2;
                         difficulty = Difficulty.Hard;
@@ -648,7 +699,7 @@ public class Main extends GameEngine {
                         difficultyMenu--;
                         difficulty = Difficulty.Normal;
                     }
-                } else if (livesDifficulty == 1) {
+                } else if (livesMenuVert == 1) {
                     if (livesMenu == 0) {
                         livesMenu += 2;
                         gameLives = 4;
@@ -659,10 +710,22 @@ public class Main extends GameEngine {
                         livesMenu--;
                         gameLives = 2;
                     }
+                } else if (livesMenuVert== 2) {
+                    if(backgroundMusicMenu == 0){
+                        backgroundMusicMenu = 1;
+                    }else if(backgroundMusicMenu == 1){
+                        backgroundMusicMenu = 0;
+                    }
+                }else if (livesMenuVert== 3) {
+                    if(soundEffectsMenu == 0){
+                        soundEffectsMenu = 1;
+                    }else if(soundEffectsMenu == 1){
+                        soundEffectsMenu = 0;
+                    }
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if (livesDifficulty == 0) {
+                if (livesMenuVert == 0) {
                     if (difficultyMenu == 0) {
                         difficultyMenu++;
                         difficulty = Difficulty.Normal;
@@ -673,7 +736,7 @@ public class Main extends GameEngine {
                         difficultyMenu -= 2;
                         difficulty = Difficulty.Easy;
                     }
-                } else if (livesDifficulty == 1) {
+                } else if (livesMenuVert == 1) {
                     if (livesMenu == 0) {
                         livesMenu++;
                         gameLives = 2;
@@ -684,16 +747,40 @@ public class Main extends GameEngine {
                         livesMenu -= 2;
                         gameLives = -1;
                     }
+                }else if (livesMenuVert== 2) {
+                    if(backgroundMusicMenu == 0){
+                        backgroundMusicMenu = 1;
+                    }else if(backgroundMusicMenu == 1){
+                        backgroundMusicMenu = 0;
+                    }
+                }else if (livesMenuVert== 3) {
+                    if(soundEffectsMenu == 0){
+                        soundEffectsMenu = 1;
+                    }else if(soundEffectsMenu == 1){
+                        soundEffectsMenu = 0;
+                    }
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_UP) {
-                if (livesDifficulty == 1) {
-                    livesDifficulty--;
+                if (livesMenuVert == 0) {
+                    livesMenuVert = 3;
+                }else if(livesMenuVert ==1){
+                    livesMenuVert=0;
+                }else if(livesMenuVert ==2){
+                    livesMenuVert=1;
+                }else if(livesMenuVert ==3){
+                    livesMenuVert=2;
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                if (livesDifficulty == 0) {
-                    livesDifficulty++;
+                if (livesMenuVert== 0) {
+                    livesMenuVert=1;
+                }else if(livesMenuVert == 1){
+                    livesMenuVert=2;
+                }else if(livesMenuVert == 2){
+                    livesMenuVert=3;
+                }else if(livesMenuVert == 3){
+                    livesMenuVert=0;
                 }
             }
         }
@@ -1108,8 +1195,12 @@ public class Main extends GameEngine {
     double ballPositionX, ballPositionY, ballVelocityX, ballVelocityY, ballAngle;
     Color ballColour;
     Image ballImage,ballHeavyImage,flamesImage;
+    AudioClip ballPopAudio, jumpPadAudio, killEnemyAudio;
 
     public void initBall(){
+        ballPopAudio = loadAudio("Sounds/SoundEffects/BallPop.wav");
+        jumpPadAudio = loadAudio("Sounds/SoundEffects/Jump_Pad.wav");
+        killEnemyAudio = loadAudio("Sounds/SoundEffects/Kill_Enemy.wav");
         ballImage = loadImage("Images/Sprites/ball.png");
         ballHeavyImage= loadImage("Images/Sprites/BallHeavy.png");
         flamesImage = loadImage("Images/Sprites/Flames.png");
@@ -1537,7 +1628,7 @@ public class Main extends GameEngine {
     public void drawCoins() {
         if(gameLevel<=3) {
             for (int i = 0; i < coinPositionX.size(); i++) {
-                if(activeCoin[i]==true) {
+                if(activeCoin[i]) {
                     translate(coinPositionX.get(i), coinPositionY.get(i));
                     drawImage(coinFrames.get(count/2), 0, 0, 20, 20);
                     restoreLastTransform();
@@ -1553,7 +1644,7 @@ public class Main extends GameEngine {
     public void updateCoins(double dt) {
         if (gameLevel <= 3) {
             for (int i = 0; i < coinPositionX.size(); i++) {
-                if(activeCoin[i]==true) {
+                if(activeCoin[i]) {
                     coinPositionX.set(i, coinPositionX.get(i) - gameSpeed * dt);
                 }
             }
