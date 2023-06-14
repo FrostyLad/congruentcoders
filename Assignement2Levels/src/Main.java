@@ -1447,10 +1447,10 @@ public class Main extends GameEngine {
         return new int[]{0, 0};
     }
     public void checkCollisions(){
-        //checkLevelFinish();
-       // checkBallonSpikes();
+        checkLevelFinish();
+        checkBallonSpikes();
         if (enemies != null) {
-          //  checkEnemyCollision();
+            checkEnemyCollision();
         }
         checkCoinCollision();
     }
