@@ -23,7 +23,7 @@ public class Main extends GameEngine {
     GameState state = GameState.Menu;
     enum Difficulty {Easy, Normal, Hard}
     Difficulty difficulty = Difficulty.Normal;
-    int menuOption,exitOption,levelMenu,levelExit,gameOver, gameLevel, width, height, levelCompOption, score,
+    int menuOption,exitOption,levelMenu,gameOver, gameLevel, width, height, levelCompOption, score,
             difficultyMenu, livesMenu, livesMenuVert, gameLives, lives,soundEffectsMenu,backgroundMusicMenu, backgroundVolume, soundEffectsVolume;
     double gameSpeed;
     Scanner platformRead, enemyRead, coinRead;
@@ -38,7 +38,6 @@ public class Main extends GameEngine {
         menuOption = 0;
         exitOption = 0;
         levelMenu = 1;
-        levelExit = 0;
         gameOver = 0;
         gameLevel = 1;
         width = 500;
@@ -64,22 +63,15 @@ public class Main extends GameEngine {
     public void paintComponent() {
         changeBackgroundColor(208,245,190);
         clearBackground(width, height);
-        if(state == GameState.Menu) {
-            drawMenu();
-        }else if(state == GameState.Levels) {
-            drawLevels();
-        }else if(state == GameState.Play) {
-            drawGame();
-        }else if(state == GameState.Exit){
-            drawExit();
-        }else if(state == GameState.GameOver){
-            drawGameOver();
-        }else if(state == GameState.LevelComplete){
-            drawLevelComplete();
-        }else if(state == GameState.Instructions){
-            drawInstructions();
-        }else if(state == GameState.Options){
-            drawOptions();
+        switch (state) {
+            case Menu -> drawMenu();
+            case Levels -> drawLevels();
+            case Play -> drawGame();
+            case Exit -> drawExit();
+            case GameOver -> drawGameOver();
+            case LevelComplete -> drawLevelComplete();
+            case Instructions -> drawInstructions();
+            case Options -> drawOptions();
         }
     }
     public void drawGame(){
@@ -440,22 +432,27 @@ public class Main extends GameEngine {
             drawText(405, 350, "Off",30);
         }
 
-        if(livesMenuVert == 0){
-            drawImage(ballImage,10,175,30,30);
-            changeColor(black);
-            drawCircle(25,190, 15);
-        }else if(livesMenuVert == 1){
-            drawImage(ballImage,10,225,30,30);
-            changeColor(black);
-            drawCircle(25,240, 15);
-        } else if (livesMenuVert == 2){
-            changeColor(black);
-            drawImage(ballImage,10,275,30,30);
-            drawCircle(25,290, 15);
-        }else if (livesMenuVert == 3){
-            changeColor(black);
-            drawImage(ballImage,10,325,30,30);
-            drawCircle(25,340, 15);
+        switch (livesMenuVert) {
+            case 0 -> {
+                drawImage(ballImage,10,175,30,30);
+                changeColor(black);
+                drawCircle(25,190, 15);
+            }
+            case 1 -> {
+                drawImage(ballImage,10,225,30,30);
+                changeColor(black);
+                drawCircle(25,240, 15);
+            }
+            case 2 -> {
+                drawImage(ballImage, 10, 275, 30, 30);
+                changeColor(black);
+                drawCircle(25, 290, 15);
+                }
+            case 3 -> {
+                drawImage(ballImage,10,325,30,30);
+                changeColor(black);
+                drawCircle(25,340, 15);
+            }
         }
     }
     AudioClip menuAudio, level1BackgroundAudioEasy,level1BackgroundAudioNormal,level1BackgroundAudioHard,
@@ -463,13 +460,12 @@ public class Main extends GameEngine {
             level3BackgroundAudioEasy,level3BackgroundAudioNormal,level3BackgroundAudioHard;
     AudioClip currentBackgroundAudio;
     public void initGame(){
-        if (difficulty == Difficulty.Easy){
-            gameSpeed = 150;
-        }else if(difficulty == Difficulty.Normal){
-            gameSpeed = 200;
-        }else if(difficulty == Difficulty.Hard){
-            gameSpeed = 250;
+        switch (difficulty) {
+            case Easy -> gameSpeed = 150;
+            case Normal -> gameSpeed = 200;
+            case Hard -> gameSpeed = 250;
         }
+
         level1BackgroundAudioEasy = loadAudio("Sounds/BackgroundMusic/Beach_Theme_Slow.wav");
         level1BackgroundAudioNormal = loadAudio("Sounds/BackgroundMusic/Beach_Theme.wav");
         level1BackgroundAudioHard = loadAudio("Sounds/BackgroundMusic/Beach_Theme_Fast.wav");
@@ -552,334 +548,346 @@ public class Main extends GameEngine {
     //***********************Key Press***********************
     //*******************************************************
 
-    public void keyPressed(KeyEvent e){
-        if (state == GameState.Play) {
-            if(gameLevel <= 3) {
-                if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    if (jumpReady) {
-                        ballPositionY--;
-                        Jump = true;
-                        jumpReady = false;
+    public void keyPressed(KeyEvent e) {
+        switch (state) {
+            case Play -> {
+                if (gameLevel <= 3) {
+                    switch (e.getKeyCode()) {
+                        case KeyEvent.VK_UP -> {
+                            if (jumpReady) {
+                                ballPositionY--;
+                                Jump = true;
+                                jumpReady = false;
+                            }
+                        }
+                        case KeyEvent.VK_LEFT -> {
+                            ballAngle -= 200 * 0.015;
+                            if (ballVelocityX > 50) {
+                                ballVelocityX -= (ballVelocityX - 50) / 2;
+                            }
+                            ballVelocityX -= 15;
+                        }
+                        case KeyEvent.VK_RIGHT -> {
+                            ballAngle += 200 * 0.015;
+                            if (ballVelocityX < -50) {
+                                ballVelocityX -= (ballVelocityX + 50) / 2;
+                            }
+                            ballVelocityX += 15;
+                        }
+                        case KeyEvent.VK_DOWN -> {
+                            if (checkBallOnPlatform()[1] == 0) {
+                                heavy = true;
+                            }
+                        }
+                        case KeyEvent.VK_ESCAPE -> {
+                            stopAudioLoop(currentBackgroundAudio);
+                            if (backgroundVolume > -100) {
+                                menuPlaying = true;
+                                startAudioLoop(menuAudio, backgroundVolume);
+                            }
+                            state = GameState.Menu;
+                        }
+                    }
+                } else {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        if (backgroundVolume > -100) {
+                            menuPlaying = true;
+                            startAudioLoop(menuAudio, backgroundVolume);
+                        }
+                        state = GameState.Menu;
                     }
                 }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    ballAngle -= 200 * 0.015;
-                    if (ballVelocityX > 50) {
-                        ballVelocityX -= (ballVelocityX - 50) / 2;
+            }
+            case Menu -> {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_UP -> {
+                        if (menuOption == 0) {
+                            menuOption += 4;
+                        } else {
+                            menuOption--;
+                        }
                     }
-                    ballVelocityX -= 15;
+
+                    case KeyEvent.VK_DOWN -> {
+                        if (menuOption == 4) {
+                            menuOption -= 4;
+                        }
+                        else  {
+                            menuOption++;
+                        }
+                    }
+                    case KeyEvent.VK_ENTER -> {
+                        switch (menuOption) {
+                            case 0 -> {
+                                menuPlaying = false;
+                                stopAudioLoop(menuAudio);
+                                initGame();
+                                state = GameState.Play;
+                            }
+                            case 1 -> state = GameState.Levels;
+                            case 2 -> state = GameState.Instructions;
+                            case 3 -> {
+                                switch (gameLives) {
+                                    case -1 -> livesMenu = 0;
+                                    case 2 -> livesMenu = 1;
+                                    default -> livesMenu = 2;
+                                }
+                                state = GameState.Options;
+                            }
+                            default -> state = GameState.Exit;
+                        }
+                    }
                 }
-                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    ballAngle += 200 * 0.015;
-                    if (ballVelocityX < -50) {
-                        ballVelocityX -= (ballVelocityX + 50) / 2;
+            }
+            case Levels -> {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ESCAPE -> state = GameState.Menu;
+                    case KeyEvent.VK_RIGHT -> {
+                        if (levelMenu < 5) {
+                            levelMenu++;
+                        }
                     }
-                    ballVelocityX += 15;
+                    case KeyEvent.VK_LEFT -> {
+                        if (levelMenu > 1) {
+                            levelMenu--;
+                        }
+                    }
+                    case KeyEvent.VK_ENTER -> {
+                        menuPlaying = false;
+                        stopAudioLoop(menuAudio);
+                        switch(levelMenu) {
+                            case 1 -> {
+                                gameLevel = 1;
+                                initGame();
+                                state = GameState.Play;
+                            }
+                            case 2 -> {
+                                gameLevel = 2;
+                                initGame();
+                                state = GameState.Play;
+                            }
+                            case 3 -> {
+                                gameLevel = 3;
+                                initGame();
+                                state = GameState.Play;
+                            }
+                            case 4 -> {
+                                gameLevel = 4;
+                                initGame();
+                                state = GameState.Play;
+                            }
+                            case 5 -> {
+                                gameLevel = 5;
+                                initGame();
+                                state = GameState.Play;
+                            }
+                        }
+                    }
                 }
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    if (checkBallOnPlatform()[1] == 0) {
-                        ballColour = Color.gray;
-                        heavy = true;
+            }
+            case Exit -> {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> {
+                        if (exitOption == 0) {
+                            state = GameState.Menu;
+                        } else if (exitOption == 1) {
+                            System.exit(1);
+                        }
+                    }
+                    case KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT -> {
+                        if (exitOption == 0) {
+                            exitOption++;
+                        } else if (exitOption == 1) {
+                            exitOption--;
+                        }
                     }
                 }
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    stopAudioLoop(currentBackgroundAudio);
-                    if (backgroundVolume > -100) {
-                        menuPlaying = true;
-                        startAudioLoop(menuAudio, backgroundVolume);
+            }
+            case GameOver -> {
+                switch(e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> {
+                        if (gameOver == 0) {
+                            menuPlaying = false;
+                            stopAudioLoop(menuAudio);
+                            initGame();
+                            state = GameState.Play;
+                        } else if (gameOver == 1) {
+                            state = GameState.Menu;
+                            gameOver = 0;
+                        }
                     }
+                    case KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT -> {
+                        if (gameOver == 0) {
+                            gameOver++;
+                        } else if (gameOver == 1) {
+                            gameOver--;
+                        }
+                    }
+                }
+            }
+            case LevelComplete -> {
+                switch(e.getKeyCode()) {
+                    case KeyEvent.VK_UP, KeyEvent.VK_DOWN -> {
+                        if (levelCompOption == 0) {
+                            levelCompOption++;
+                        } else if (levelCompOption == 1) {
+                            levelCompOption--;
+                        }
+                    }
+                    case KeyEvent.VK_ENTER -> {
+                        if (levelCompOption == 0) {
+                            menuPlaying = false;
+                            stopAudioLoop(menuAudio);
+                            initGame();
+                            state = GameState.Play;
+                        } else if (levelCompOption == 1) {
+                            if (backgroundVolume > -100) {
+                                menuPlaying = true;
+                                startAudioLoop(menuAudio, backgroundVolume);
+                            }
+                            state = GameState.Menu;
+                        }
+                    }
+                }
+            }
+            case Instructions -> {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     state = GameState.Menu;
                 }
-            }else {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                    if (backgroundVolume > -100) {
-                        menuPlaying = true;
-                        startAudioLoop(menuAudio, backgroundVolume);
+            }case Options ->  {
+                switch (e.getKeyCode()) {
+                    case KeyEvent.VK_ENTER -> {
+                        lives = gameLives;
+                        state = GameState.Menu;
+                        if (backgroundMusicMenu == 1) {
+                            backgroundVolume = -100;
+                            menuPlaying = false;
+                            stopAudioLoop(menuAudio);
+                        } else {
+                            if (!menuPlaying) {
+                                menuPlaying = true;
+                                startAudioLoop(menuAudio);
+                            }
+                            backgroundVolume = 0;
+                        }
+                        if (soundEffectsMenu == 1) {
+                            soundEffectsVolume = -100;
+                        } else {
+                            soundEffectsVolume = 0;
+                        }
                     }
-                    state = GameState.Menu;
-                }
-            }
-        } else if (state == GameState.Menu){
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
-                if(menuOption == 1){
-                    menuOption--;
-                }else if(menuOption == 2){
-                    menuOption--;
-                } else if(menuOption == 3){
-                    menuOption--;
-                } else if(menuOption == 4){
-                    menuOption--;
-                }else if(menuOption == 0){
-                    menuOption +=4;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                if(menuOption == 0){
-                    menuOption++;
-                }else if(menuOption == 1){
-                    menuOption++;
-                }else if(menuOption == 2){
-                    menuOption++;
-                }else if(menuOption == 3){
-                    menuOption++;
-                }else if (menuOption == 4){
-                    menuOption-=4;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if(menuOption == 0){
-                    menuPlaying = false;
-                    stopAudioLoop(menuAudio);
-                    initGame();
-                    state = GameState.Play;
-                }else if(menuOption == 1){
-                    state = GameState.Levels;
-                }else if(menuOption == 2){
-                    state = GameState.Instructions;
-                }else if(menuOption == 3){
-                    if(gameLives ==-1) {
-                        livesMenu = 0;
-                    }else if (gameLives == 2){
-                        livesMenu = 1;
-                    }else{
-                        livesMenu = 2;
+                    case KeyEvent.VK_LEFT -> {
+                        switch (livesMenuVert) {
+                            case 0 -> {
+                                switch (difficultyMenu) {
+                                    case 0 -> {
+                                        difficultyMenu += 2;
+                                        difficulty = Difficulty.Hard;
+                                    }
+                                    case 1 -> {
+                                        difficultyMenu--;
+                                        difficulty = Difficulty.Easy;
+                                    }
+                                    case 2 -> {
+                                        difficultyMenu--;
+                                        difficulty = Difficulty.Normal;
+                                    }
+                                }
+                            }
+                            case 1 -> {
+                                switch (livesMenu) {
+                                    case 0 -> {
+                                        livesMenu += 2;
+                                        gameLives = 4;
+                                    }
+                                    case 1 -> {
+                                        livesMenu--;
+                                        gameLives = -1;
+                                    }
+                                    case 2 -> {
+                                        livesMenu--;
+                                        gameLives = 2;
+                                    }
+                                }
+                            }
+                            case 2 -> {
+                                if (backgroundMusicMenu == 0) {
+                                    backgroundMusicMenu = 1;
+                                } else if (backgroundMusicMenu == 1) {
+                                    backgroundMusicMenu = 0;
+                                }
+                            }
+                            case 3 -> {
+                                if (soundEffectsMenu == 0) {
+                                    soundEffectsMenu = 1;
+                                } else if (soundEffectsMenu == 1) {
+                                    soundEffectsMenu = 0;
+                                }
+                            }
+                        }
                     }
-                    state = GameState.Options;
-                }else{
-                    state = GameState.Exit;
-                }
-            }
-        }else if(state == GameState.Levels) {
-            if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
-                state = GameState.Menu;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT){
-                if (levelMenu < 5){
-                    levelMenu++;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT){
-                if (levelMenu > 1){
-                    levelMenu--;
-                }
-            }
-            if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-                menuPlaying = false;
-                stopAudioLoop(menuAudio);
-                if (levelMenu == 1){
-                    gameLevel = 1;
-                    initGame();
-                    state = GameState.Play;
-                }else if (levelMenu == 2){
-                    gameLevel = 2;
-                    initGame();
-                    state = GameState.Play;
-                }else if (levelMenu == 3){
-                    gameLevel = 3;
-                    initGame();
-                    state = GameState.Play;
-                }else if (levelMenu == 4){
-                    gameLevel = 4;
-                    initGame();
-                    state = GameState.Play;
-                }else if (levelMenu == 5){
-                    gameLevel = 5;
-                    initGame();
-                    state = GameState.Play;
-                }
-            }
-        }else if(state == GameState.Exit){
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if(exitOption == 0){
-                    state = GameState.Menu;
-                }else if(exitOption == 1){System.exit(1);}
-            }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                if(exitOption == 0){
-                    exitOption++;
-                }else if(exitOption == 1){
-                    exitOption--;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if(exitOption == 0){
-                    exitOption++;
-                }else if(exitOption == 1){
-                    exitOption--;
-                }
-            }
-        }else if (state == GameState.GameOver){
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if(gameOver == 0){
-                    menuPlaying = false;
-                    stopAudioLoop(menuAudio);
-                    initGame();
-                    state = GameState.Play;
-                }else if(gameOver == 1){
-                    state = GameState.Menu;
-                    gameOver=0;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                if(gameOver == 0){
-                    gameOver++;
-                }else if(gameOver == 1){
-                    gameOver--;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if(gameOver == 0){
-                    gameOver++;
-                }else if(gameOver == 1){
-                    gameOver--;
-                }
-            }
-        }else if (state == GameState.LevelComplete){
-            if(e.getKeyCode() == KeyEvent.VK_UP){
-                if(levelCompOption == 0){
-                    levelCompOption++;
-                }else if(levelCompOption == 1){
-                    levelCompOption--;
-                }
-            }
-            if(e.getKeyCode() == KeyEvent.VK_DOWN){
-                if(levelCompOption == 0){
-                    levelCompOption++;
-                }else if(levelCompOption == 1){
-                    levelCompOption--;
-                }
-            }
-            if(e.getKeyCode() == KeyEvent.VK_ENTER){
-                if(levelCompOption == 0){
-                    menuPlaying = false;
-                    stopAudioLoop(menuAudio);
-                    initGame();
-                    state = GameState.Play;
-                }else if(levelCompOption == 1){
-                    if (backgroundVolume > -100) {
-                        menuPlaying = true;
-                        startAudioLoop(menuAudio, backgroundVolume);
+                    case KeyEvent.VK_RIGHT -> {
+                        switch (livesMenuVert) {
+                            case 0 -> {
+                                if (difficultyMenu == 0) {
+                                    difficultyMenu++;
+                                    difficulty = Difficulty.Normal;
+                                } else if (difficultyMenu == 1) {
+                                    difficultyMenu++;
+                                    difficulty = Difficulty.Hard;
+                                } else if (difficultyMenu == 2) {
+                                    difficultyMenu -= 2;
+                                    difficulty = Difficulty.Easy;
+                                }
+                            }
+                            case 1 -> {
+                                switch (livesMenu) {
+                                    case 0 -> {
+                                        livesMenu++;
+                                        gameLives = 2;
+                                    }
+                                    case 1 -> {
+                                        livesMenu++;
+                                        gameLives = 4;
+                                    }
+                                    case 2 -> {
+                                        livesMenu -= 2;
+                                        gameLives = -1;
+                                    }
+                                }
+                            }
+                            case 2 -> {
+                                if (backgroundMusicMenu == 0) {
+                                    backgroundMusicMenu = 1;
+                                } else if (backgroundMusicMenu == 1) {
+                                    backgroundMusicMenu = 0;
+                                }
+                            }
+                            case 3 -> {
+                                if (soundEffectsMenu == 0) {
+                                    soundEffectsMenu = 1;
+                                } else if (soundEffectsMenu == 1) {
+                                    soundEffectsMenu = 0;
+                                }
+                            }
+                        }
                     }
-                    state = GameState.Menu;
-                }
-            }
-        }else if(state == GameState.Instructions && e.getKeyCode() == KeyEvent.VK_ENTER){
-            state = GameState.Menu;
-        }else if(state == GameState.Options) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                lives = gameLives;
-                state = GameState.Menu;
-                if(backgroundMusicMenu == 1){
-                    backgroundVolume = -100;
-                    menuPlaying = false;
-                    stopAudioLoop(menuAudio);
-                }else{
-                    if(!menuPlaying) {
-                        menuPlaying = true;
-                        startAudioLoop(menuAudio);
+                    case KeyEvent.VK_UP -> {
+                        switch (livesMenuVert) {
+                            case 0 -> livesMenuVert = 3;
+                            case 1 -> livesMenuVert = 0;
+                            case 2 -> livesMenuVert = 1;
+                            case 3 -> livesMenuVert = 2;
+                        }
                     }
-                    backgroundVolume = 0;
-                }
-                if(soundEffectsMenu == 1){
-                    soundEffectsVolume = -100;
-                }else{
-                    soundEffectsVolume = 0;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                if (livesMenuVert == 0) {
-                    if (difficultyMenu == 0) {
-                        difficultyMenu += 2;
-                        difficulty = Difficulty.Hard;
-                    } else if (difficultyMenu == 1) {
-                        difficultyMenu--;
-                        difficulty = Difficulty.Easy;
-                    } else if (difficultyMenu == 2) {
-                        difficultyMenu--;
-                        difficulty = Difficulty.Normal;
+                    case KeyEvent.VK_DOWN -> {
+                        switch (livesMenuVert) {
+                            case 0 -> livesMenuVert = 1;
+                            case 1 -> livesMenuVert = 2;
+                            case 2 -> livesMenuVert = 3;
+                            case 3 -> livesMenuVert = 0;
+                        }
                     }
-                } else if (livesMenuVert == 1) {
-                    if (livesMenu == 0) {
-                        livesMenu += 2;
-                        gameLives = 4;
-                    } else if (livesMenu == 1) {
-                        livesMenu--;
-                        gameLives = -1;
-                    } else if (livesMenu == 2) {
-                        livesMenu--;
-                        gameLives = 2;
-                    }
-                } else if (livesMenuVert== 2) {
-                    if(backgroundMusicMenu == 0){
-                        backgroundMusicMenu = 1;
-                    }else if(backgroundMusicMenu == 1){
-                        backgroundMusicMenu = 0;
-                    }
-                }else if (livesMenuVert== 3) {
-                    if(soundEffectsMenu == 0){
-                        soundEffectsMenu = 1;
-                    }else if(soundEffectsMenu == 1){
-                        soundEffectsMenu = 0;
-                    }
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                if (livesMenuVert == 0) {
-                    if (difficultyMenu == 0) {
-                        difficultyMenu++;
-                        difficulty = Difficulty.Normal;
-                    } else if (difficultyMenu == 1) {
-                        difficultyMenu++;
-                        difficulty = Difficulty.Hard;
-                    } else if (difficultyMenu == 2) {
-                        difficultyMenu -= 2;
-                        difficulty = Difficulty.Easy;
-                    }
-                } else if (livesMenuVert == 1) {
-                    if (livesMenu == 0) {
-                        livesMenu++;
-                        gameLives = 2;
-                    } else if (livesMenu == 1) {
-                        livesMenu++;
-                        gameLives = 4;
-                    } else if (livesMenu == 2) {
-                        livesMenu -= 2;
-                        gameLives = -1;
-                    }
-                }else if (livesMenuVert== 2) {
-                    if(backgroundMusicMenu == 0){
-                        backgroundMusicMenu = 1;
-                    }else if(backgroundMusicMenu == 1){
-                        backgroundMusicMenu = 0;
-                    }
-                }else if (livesMenuVert== 3) {
-                    if(soundEffectsMenu == 0){
-                        soundEffectsMenu = 1;
-                    }else if(soundEffectsMenu == 1){
-                        soundEffectsMenu = 0;
-                    }
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
-                if (livesMenuVert == 0) {
-                    livesMenuVert = 3;
-                }else if(livesMenuVert ==1){
-                    livesMenuVert=0;
-                }else if(livesMenuVert ==2){
-                    livesMenuVert=1;
-                }else if(livesMenuVert ==3){
-                    livesMenuVert=2;
-                }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                if (livesMenuVert== 0) {
-                    livesMenuVert=1;
-                }else if(livesMenuVert == 1){
-                    livesMenuVert=2;
-                }else if(livesMenuVert == 2){
-                    livesMenuVert=3;
-                }else if(livesMenuVert == 3){
-                    livesMenuVert=0;
                 }
             }
         }
@@ -917,25 +925,17 @@ public class Main extends GameEngine {
         platformLargePositionY = new ArrayList<>();
         platformVertPositionX = new ArrayList<>();
         platformVertPositionY = new ArrayList<>();
-        if(gameLevel == 1) {
-            try {
-                platformRead = new Scanner(new File("platformPositions.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+
+        try {
+            switch (gameLevel) {
+                case 1 -> platformRead = new Scanner(new File("platformPositions.txt"));
+                case 2 -> platformRead = new Scanner(new File("platformPositionsLevel2.txt"));
+                case 3 -> platformRead = new Scanner(new File("platformPositionsLevel3.txt"));
             }
-        }else if (gameLevel == 2){
-            try {
-                platformRead = new Scanner(new File("platformPositionsLevel2.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }else if (gameLevel == 3){
-            try {
-                platformRead = new Scanner(new File("platformPositionsLevel3.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
+
         while (platformRead.hasNext()) {
             currentLine = platformRead.nextLine().split(",");
             switch (currentLine[0]) {
@@ -1064,7 +1064,6 @@ public class Main extends GameEngine {
     boolean[] bounceEnemyActive, rollingEnemyActive,flyingEnemyActive;
     ArrayList<ArrayList<Double>> enemies, square;
     double bounceEnemyVelocityY,bounceHeight;
-    ArrayList<Integer> flyingEnemyLock;
     ArrayList<ArrayList<ArrayList<Double>>> flyingSquare;
     public void initEnemies(){
         bounceHeight = 100;
@@ -1088,7 +1087,6 @@ public class Main extends GameEngine {
         bounceEnemyActive = new boolean[10];
         rollingEnemyActive = new boolean[10];
         flyingEnemyActive = new boolean[10];
-        flyingEnemyLock = new ArrayList<>();
         points = new ArrayList<>();
         square = new ArrayList<>();
         try {
@@ -1118,11 +1116,11 @@ public class Main extends GameEngine {
                     rollingEnemyPositionY.add(Double.parseDouble(currentLine[2]));
                     rollingEnemyAngle.add(0.0);
                 }case "3" -> {
-                    double startx = Double.parseDouble(currentLine[1]);
-                    double starty = Double.parseDouble(currentLine[2]) - 100;
-                    flyingEnemyPositionX.add(startx);
-                    flyingEnemyPositionY.add(starty);
-                    flyingEnemyStart.add(Double.parseDouble(String.valueOf(starty)));
+                    double startX = Double.parseDouble(currentLine[1]);
+                    double startY = Double.parseDouble(currentLine[2]) - 100;
+                    flyingEnemyPositionX.add(startX);
+                    flyingEnemyPositionY.add(startY);
+                    flyingEnemyStart.add(Double.parseDouble(String.valueOf(startY)));
                     Random r = new Random();
                     square = new ArrayList<>();
 
@@ -1130,20 +1128,20 @@ public class Main extends GameEngine {
                     flyingEnemyVelocityY.add(Double.parseDouble(String.valueOf(r.nextInt(20) - 10)));
 
                     points = new ArrayList<>();
-                    points.add(startx-60);
-                    points.add(starty-60);
+                    points.add(startX-60);
+                    points.add(startY-60);
                     square.add(points);
                     points = new ArrayList<>();
-                    points.add(startx-60);
-                    points.add(starty+60);
+                    points.add(startX-60);
+                    points.add(startY+60);
                     square.add(points);
                     points = new ArrayList<>();
-                    points.add(startx+60);
-                    points.add(starty-60);
+                    points.add(startX+60);
+                    points.add(startY-60);
                     square.add(points);
                     points = new ArrayList<>();
-                    points.add(startx+60);
-                    points.add(starty+60);
+                    points.add(startX+60);
+                    points.add(startY+60);
                     square.add(points);
                     flyingSquare.add(square);
 
@@ -1171,8 +1169,6 @@ public class Main extends GameEngine {
                 if(bounceEnemyActive[i]) {
                     translate(bounceEnemyPositionX.get(i)-ballRadius, bounceEnemyPositionY.get(i)-ballRadius);
                     drawImage(bounceEnemy,-20,-20,ballRadius*2,ballRadius*2);
-                    changeColor(red);
-                    drawRectangle(-20, -20, 40, 40, 2);
                     restoreLastTransform();
                 }
             }
@@ -1213,27 +1209,27 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPositionY.size(); i++) {
                 bounceEnemyPositionX.set(i, bounceEnemyPositionX.get(i) - gameSpeed * dt);
-                    for (ArrayList<Double> platform : platforms) {
-                        if (platform.get(1) <= bounceEnemyPositionX.get(i) + ballRadius  && bounceEnemyPositionX.get(i) - ballRadius < width
-                                && platform.get(1) + platform.get(3) >= bounceEnemyPositionX.get(i) - ballRadius) {
-                            bounceEnemyApex[i] = platform.get(2) - bounceHeight + ballRadius;
-                            bounceEnemyStartY[i] = platform.get(2);
-                            if (bounceEnemyPositionY.get(i) >= bounceEnemyStartY[i]) {
-                                bounceEnemyVelocityY = 150;
-                            }
-                            if (bounceEnemyPositionY.get(i) <= bounceEnemyApex[i]) {
-                                bounceEnemyVelocityY = -150;
-                            }
+                for (ArrayList<Double> platform : platforms) {
+                    if (platform.get(1) <= bounceEnemyPositionX.get(i) + ballRadius  && bounceEnemyPositionX.get(i) - ballRadius < width
+                            && platform.get(1) + platform.get(3) >= bounceEnemyPositionX.get(i) - ballRadius) {
+                        bounceEnemyApex[i] = platform.get(2) - bounceHeight + ballRadius;
+                        bounceEnemyStartY[i] = platform.get(2);
+                        if (bounceEnemyPositionY.get(i) >= bounceEnemyStartY[i]) {
+                            bounceEnemyVelocityY = 150;
+                        }
+                        if (bounceEnemyPositionY.get(i) <= bounceEnemyApex[i]) {
+                            bounceEnemyVelocityY = -150;
                         }
                     }
-                    bounceEnemyPositionY.set(i, bounceEnemyPositionY.get(i) - bounceEnemyVelocityY * dt);
-                    temp = new ArrayList<>();
-                    temp.add(1.0);
-                    temp.add(bounceEnemyPositionX.get(i));
-                    temp.add(bounceEnemyPositionY.get(i));
-                    temp.add(40.0);
-                    temp.add(40.0);
-                    enemies.add(temp);
+                }
+                bounceEnemyPositionY.set(i, bounceEnemyPositionY.get(i) - bounceEnemyVelocityY * dt);
+                temp = new ArrayList<>();
+                temp.add(1.0);
+                temp.add(bounceEnemyPositionX.get(i));
+                temp.add(bounceEnemyPositionY.get(i));
+                temp.add(40.0);
+                temp.add(40.0);
+                enemies.add(temp);
             }
             for (int i = 0; i < rollingEnemyPositionY.size(); i++) {
                 rollingEnemyPositionX.set(i, rollingEnemyPositionX.get(i) - gameSpeed * dt);
@@ -1287,7 +1283,6 @@ public class Main extends GameEngine {
     boolean Jump, jumpReady, heavy;
     int jumpCount, ballRadius, canJumpPad;
     double ballPositionX, ballPositionY, ballVelocityX, ballVelocityY, ballAngle;
-    Color ballColour;
     Image ballHeavyImage,flamesImage;
     AudioClip ballPopAudio, jumpPadAudio,killBounceEnemyAudio,killRollingEnemyAudio,killFlyingEnemyAudio, coinAudio;
 
@@ -1309,7 +1304,6 @@ public class Main extends GameEngine {
         ballPositionY = 400;
         ballVelocityX = 10;
         ballVelocityY = 0;
-        ballColour = white;
         canJumpPad = 0;
         ballAngle = 0;
 
@@ -1348,7 +1342,6 @@ public class Main extends GameEngine {
 
             }else {
                 heavy = false;
-                ballColour = white;
                 ballVelocityY = 0;
                 ballPositionY = platformcheck[0]-ballRadius;
             }
@@ -1394,7 +1387,6 @@ public class Main extends GameEngine {
             }
             case 4 -> { // jump pad
                 heavy = false;
-                ballColour = white;
                 if (canJumpPad == 0) {
                     Jump = false;
                     ballPositionY -= 10;
@@ -1615,7 +1607,6 @@ public class Main extends GameEngine {
                 if (platform.get(1) <= i && platform.get(1) + platform.get(3) >= i) {
                     ballPositionX = i;
                     heavy = false;
-                    ballColour = white;
                     ballVelocityY = 0;
                     ballPositionY = platform.get(2) - ballRadius;
                     jumpReady = true;
@@ -1725,25 +1716,16 @@ public class Main extends GameEngine {
                 coinFrames.add(subImage(coinSpriteSheet, x * 200, y * 200, 200, 200));
             }
         }
-        if (gameLevel == 1) {
-            try {
-                coinRead = new Scanner(new File("coinPositions.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
+        try {
+            switch (gameLevel) {
+                case 1 -> coinRead = new Scanner(new File("coinPositions.txt"));
+                case 2 -> coinRead = new Scanner(new File("coinPositionsLevel2.txt"));
+                case 3 -> coinRead = new Scanner(new File("coinPositionsLevel3.txt"));
             }
-        }else if (gameLevel == 2) {
-            try {
-                coinRead = new Scanner(new File("coinPositionsLevel2.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }else if (gameLevel == 3) {
-            try {
-                coinRead = new Scanner(new File("coinPositionsLevel3.txt"));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
+
         while (coinRead.hasNext()) {
             currentLine = coinRead.nextLine().split(",");
             if (currentLine[0].equals("0")) {
