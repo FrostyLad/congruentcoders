@@ -1,0 +1,20 @@
+this = {Main@2430} 
+dt = 0.313
+i = 0
+temp = {ArrayList@2436}  size = 5
+bounceEnemyActive[i] = true
+bounceEnemyActive = {boolean[10]@2438} [true, true, true, true, true, false, false, false, false, false]
+bounceEnemyPositionX = {ArrayList@2439}  size = 5
+ 0 = {Double@2739} 6650.0
+ 1 = {Double@2740} 12240.0
+ 2 = {Double@2741} 14930.0
+ 3 = {Double@2742} 15080.0
+ 4 = {Double@2743} 15230.0
+gameSpeed = 200.0
+bounceHeight = 100.0
+bounceEnemyApex[i] = 0.0
+enemies = {ArrayList@2431}  size = 0
+bounceEnemyPositionY = {ArrayList@2437}  size = 5
+bounceEnemyApex = {double[10]@2432} [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+platforms = {ArrayList@2440}  size = 1
+ballRadius = 20
