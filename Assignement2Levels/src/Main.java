@@ -85,14 +85,9 @@ public class Main extends GameEngine {
     public void drawGame(){
         if(gameLevel <= 3) {
             switch (gameLevel) {
-                case 1:
-                    drawImage(levelOneBackground, 0, 0, width, height);
-                    break;
-                case 2:
-                    drawImage(levelTwoBackground, 0, 0, width, height);
-                    break;
-                case 3:
-                    drawImage(levelThreeBackground, 0, 0, width, height);
+                case 1 -> drawImage(levelOneBackground, 0, 0, width, height);
+                case 2 -> drawImage(levelTwoBackground, 0, 0, width, height);
+                case 3 -> drawImage(levelThreeBackground, 0, 0, width, height);
             }
             drawSpikes();
             drawEnemies();
@@ -184,75 +179,87 @@ public class Main extends GameEngine {
         changeColor(10,77,104);
         drawText(width/2.0-95,75, "Levels",75);
         drawText(160, 450,"press Escape to exit",20);
-        if (levelMenu == 1 ){
-            changeColor(5,191,219);
-            drawText(200,300,"1",200);
-            changeColor(Color.darkGray);
-            drawText(300,300,"2",100);
-            drawText(360,300,"3",75);
-            drawText(410,300,"4",50);
-            drawText(450,300,"5",30);
-        }else if(levelMenu == 2){
-            changeColor(5,191,219);
-            drawText(200,300,"2",200);
-            changeColor(Color.darkGray);
-            drawText(300,300,"3",100);
-            drawText(360,300,"4",75);
-            drawText(410,300,"5",50);
-            drawText(160,300,"1",100);
-        } else if(levelMenu == 3){
-            changeColor(5,191,219);
-            drawText(200,300,"3",200);
-            changeColor(Color.darkGray);
-            drawText(300,300,"4",100);
-            drawText(360,300,"5",75);
-            drawText(160,300,"2",100);
-            drawText(120,300,"1",75);
-        }else if(levelMenu == 4){
-            changeColor(5,191,219);
-            drawText(200,300,"4",200);
-            changeColor(Color.darkGray);
-            drawText(300,300,"5",100);
-            drawText(150,300,"3",100);
-            drawText(110,300,"2",75);
-            drawText(90,300,"1",50);
-        }else if(levelMenu == 5){
-            changeColor(5,191,219);
-            drawText(200,300,"5",200);
-            changeColor(Color.darkGray);
-            drawText(150,300,"4",100);
-            drawText(110,300,"3",75);
-            drawText(90,300,"2",50);
-            drawText(70,300,"1",30);
+        switch (levelMenu){
+            case 1 -> {
+                changeColor(5,191,219);
+                drawText(200,300,"1",200);
+                changeColor(Color.darkGray);
+                drawText(300,300,"2",100);
+                drawText(360,300,"3",75);
+                drawText(410,300,"4",50);
+                drawText(450,300,"5",30);
+            }
+            case 2 -> {
+                changeColor(5,191,219);
+                drawText(200,300,"2",200);
+                changeColor(Color.darkGray);
+                drawText(300,300,"3",100);
+                drawText(360,300,"4",75);
+                drawText(410,300,"5",50);
+                drawText(160,300,"1",100);
+            }
+            case 3 -> {
+                changeColor(5,191,219);
+                drawText(200,300,"3",200);
+                changeColor(Color.darkGray);
+                drawText(300,300,"4",100);
+                drawText(360,300,"5",75);
+                drawText(160,300,"2",100);
+                drawText(120,300,"1",75);
+            }
+            case 4 -> {
+                changeColor(5,191,219);
+                drawText(200,300,"4",200);
+                changeColor(Color.darkGray);
+                drawText(300,300,"5",100);
+                drawText(150,300,"3",100);
+                drawText(110,300,"2",75);
+                drawText(90,300,"1",50);
+            }
+            case 5 -> {
+                changeColor(5,191,219);
+                drawText(200,300,"5",200);
+                changeColor(Color.darkGray);
+                drawText(150,300,"4",100);
+                drawText(110,300,"3",75);
+                drawText(90,300,"2",50);
+                drawText(70,300,"1",30);
+            }
         }
         changeColor(Color.darkGray);
-        if (levelMenu == 1 ){
-            drawText(300,300,"2",100);
-            drawText(360,300,"3",75);
-            drawText(410,300,"4",50);
-            drawText(450,300,"5",30);
-        }else if(levelMenu == 2){
-            drawText(300,300,"3",100);
-            drawText(360,300,"4",75);
-            drawText(410,300,"5",50);
-            drawText(160,300,"1",100);
-        } else if(levelMenu == 3){
-            drawText(300,300,"4",100);
-            drawText(360,300,"5",75);
-            drawText(160,300,"2",100);
-            drawText(120,300,"1",75);
-        }else if(levelMenu == 4){
-            drawText(300,300,"5",100);
-            drawText(150,300,"3",100);
-            drawText(110,300,"2",75);
-            drawText(90,300,"1",50);
-        }else if(levelMenu == 5){
-            drawText(150,300,"4",100);
-            drawText(110,300,"3",75);
-            drawText(90,300,"2",50);
-            drawText(70,300,"1",30);
-        }
+        switch (levelMenu){
+            case 1 -> {
+                drawText(300,300,"2",100);
+                drawText(360,300,"3",75);
+                drawText(410,300,"4",50);
+                drawText(450,300,"5",30);
+            }
+            case 2 -> {
+                drawText(300,300,"3",100);
+                drawText(360,300,"4",75);
+                drawText(410,300,"5",50);
+                drawText(160,300,"1",100);
+            }
+            case 3 -> {
+                drawText(300,300,"4",100);
+                drawText(360,300,"5",75);
+                drawText(160,300,"2",100);
+                drawText(120,300,"1",75);
+            }
+            case 4 -> {
+                drawText(300,300,"5",100);
+                drawText(150,300,"3",100);
+                drawText(110,300,"2",75);
+                drawText(90,300,"1",50);
+            }
+            case 5 -> {
+                drawText(150,300,"4",100);
+                drawText(110,300,"3",75);
+                drawText(90,300,"2",50);
+                drawText(70,300,"1",30);
+            }
 
+        }
     }
     public void drawExit(){
         changeColor(10,77,104);
@@ -473,41 +480,57 @@ public class Main extends GameEngine {
         level3BackgroundAudioNormal = loadAudio("Sounds/BackgroundMusic/Castle_Theme.wav");
         level3BackgroundAudioHard = loadAudio("Sounds/BackgroundMusic/Castle_Theme_Fast.wav");
 
-        if(gameLevel == 1){
-            if (difficulty == Difficulty.Easy){
-                startAudioLoop(level1BackgroundAudioEasy, backgroundVolume);
-                currentBackgroundAudio = level1BackgroundAudioEasy;
-            }else if(difficulty == Difficulty.Normal){
-                startAudioLoop(level1BackgroundAudioNormal, backgroundVolume);
-                currentBackgroundAudio = level1BackgroundAudioNormal;
-            }else if(difficulty == Difficulty.Hard){
-                startAudioLoop(level1BackgroundAudioHard, backgroundVolume);
-                currentBackgroundAudio = level1BackgroundAudioHard;
+
+        switch (gameLevel) {
+            case 1 -> {
+                switch (difficulty) {
+                    case Easy -> {
+                        startAudioLoop(level1BackgroundAudioEasy, backgroundVolume);
+                        currentBackgroundAudio = level1BackgroundAudioEasy;
+                    }
+                    case Normal -> {
+                        startAudioLoop(level1BackgroundAudioNormal, backgroundVolume);
+                        currentBackgroundAudio = level1BackgroundAudioNormal;
+                    }
+                    case Hard -> {
+                        startAudioLoop(level1BackgroundAudioHard, backgroundVolume);
+                        currentBackgroundAudio = level1BackgroundAudioHard;
+                    }
+                }
             }
-        }else if(gameLevel == 2){
-            if (difficulty == Difficulty.Easy){
-                startAudioLoop(level2BackgroundAudioEasy, backgroundVolume);
-                currentBackgroundAudio = level2BackgroundAudioEasy;
-            }else if(difficulty == Difficulty.Normal){
-                startAudioLoop(level2BackgroundAudioNormal, backgroundVolume);
-                currentBackgroundAudio = level2BackgroundAudioNormal;
-            }else if(difficulty == Difficulty.Hard){
-                startAudioLoop(level2BackgroundAudioHard, backgroundVolume);
-                currentBackgroundAudio = level2BackgroundAudioHard;
+            case 2 -> {
+                switch (difficulty) {
+                    case Easy -> {
+                        startAudioLoop(level2BackgroundAudioEasy, backgroundVolume);
+                        currentBackgroundAudio = level2BackgroundAudioEasy;
+                    }
+                    case Normal -> {
+                        startAudioLoop(level2BackgroundAudioNormal, backgroundVolume);
+                        currentBackgroundAudio = level2BackgroundAudioNormal;
+                    }
+                    case Hard -> {
+                        startAudioLoop(level2BackgroundAudioHard, backgroundVolume);
+                        currentBackgroundAudio = level2BackgroundAudioHard;
+                    }
+                }
             }
-        }else if(gameLevel == 3){
-            if (difficulty == Difficulty.Easy){
-                currentBackgroundAudio = level3BackgroundAudioEasy;
-                startAudioLoop(level3BackgroundAudioEasy, backgroundVolume);
-            }else if(difficulty == Difficulty.Normal){
-                currentBackgroundAudio = level3BackgroundAudioNormal;
-                startAudioLoop(level3BackgroundAudioNormal, backgroundVolume);
-            }else if(difficulty == Difficulty.Hard){
-                startAudioLoop(level3BackgroundAudioHard, backgroundVolume);
-                currentBackgroundAudio = level3BackgroundAudioHard;
+            case 3 -> {
+                switch (difficulty) {
+                    case Easy -> {
+                        startAudioLoop(level3BackgroundAudioEasy, backgroundVolume);
+                        currentBackgroundAudio = level3BackgroundAudioEasy;
+                    }
+                    case Normal -> {
+                        startAudioLoop(level3BackgroundAudioNormal, backgroundVolume);
+                        currentBackgroundAudio = level3BackgroundAudioNormal;
+                    }
+                    case Hard -> {
+                        startAudioLoop(level3BackgroundAudioHard, backgroundVolume);
+                        currentBackgroundAudio = level3BackgroundAudioHard;
+                    }
+                }
             }
         }
-
         score = 0;
         lives = gameLives;
         initBall();
@@ -562,16 +585,16 @@ public class Main extends GameEngine {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                     stopAudioLoop(currentBackgroundAudio);
                     if (backgroundVolume > -100) {
-                            menuPlaying = true;
-                            startAudioLoop(menuAudio, backgroundVolume);
+                        menuPlaying = true;
+                        startAudioLoop(menuAudio, backgroundVolume);
                     }
                     state = GameState.Menu;
                 }
             }else {
                 if(e.getKeyCode() == KeyEvent.VK_ENTER){
                     if (backgroundVolume > -100) {
-                            menuPlaying = true;
-                            startAudioLoop(menuAudio, backgroundVolume);
+                        menuPlaying = true;
+                        startAudioLoop(menuAudio, backgroundVolume);
                     }
                     state = GameState.Menu;
                 }
@@ -1190,7 +1213,6 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < bounceEnemyPositionY.size(); i++) {
                 bounceEnemyPositionX.set(i, bounceEnemyPositionX.get(i) - gameSpeed * dt);
-                if (bounceEnemyActive[i]) {
                     for (ArrayList<Double> platform : platforms) {
                         if (platform.get(1) <= bounceEnemyPositionX.get(i) + ballRadius  && bounceEnemyPositionX.get(i) - ballRadius < width
                                 && platform.get(1) + platform.get(3) >= bounceEnemyPositionX.get(i) - ballRadius) {
@@ -1212,11 +1234,10 @@ public class Main extends GameEngine {
                     temp.add(40.0);
                     temp.add(40.0);
                     enemies.add(temp);
-                }
             }
             for (int i = 0; i < rollingEnemyPositionY.size(); i++) {
                 rollingEnemyPositionX.set(i, rollingEnemyPositionX.get(i) - gameSpeed * dt);
-                if (rollingEnemyActive[i] && rollingEnemyPositionX.get(i) - ballRadius < width+20) {
+                if (rollingEnemyPositionX.get(i) - ballRadius < width+20) {
                     if (rollingEnemyPositionX.get(i) - ballRadius < width && rollingEnemyPositionX.get(i) + ballRadius > 0) {
                         rollingEnemyPositionX.set(i, rollingEnemyPositionX.get(i) - 1.5);
                         rollingEnemyAngle.set(i, rollingEnemyAngle.get(i) - 250 * dt);
@@ -1233,7 +1254,7 @@ public class Main extends GameEngine {
             }
             for (int i = 0; i < flyingEnemyPositionY.size(); i++) {
                 flyingEnemyPositionX.set(i, flyingEnemyPositionX.get(i) - gameSpeed * dt);
-                if (flyingEnemyActive[i] && flyingEnemyPositionX.get(i) - ballRadius < width+20) {
+                if (flyingEnemyPositionX.get(i) - ballRadius < width+20) {
                     for (int n = 0; n < 4; n++) {
                         flyingSquare.get(i).get(n).set(0, flyingSquare.get(i).get(n).get(0) - gameSpeed * dt);
                     }
@@ -1475,8 +1496,8 @@ public class Main extends GameEngine {
                 bounceEnemyCounter++;
                 if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && bounceEnemyActive[bounceEnemyCounter]){
                     if(heavy){
-                        bounceEnemyPositionX.set(bounceEnemyCounter, -26.0);
                         bounceEnemyActive[bounceEnemyCounter] = false;
+                        bounceEnemyPositionX.set(bounceEnemyCounter, -26.0);
                         playAudio(killBounceEnemyAudio, soundEffectsVolume);
                         score++;
                     }else {
@@ -1498,8 +1519,8 @@ public class Main extends GameEngine {
                 rollingEnemyCounter++;
                 if(distance(ballPositionX,ballPositionY,enemy.get(1),enemy.get(2)) < ballRadius * 2 && rollingEnemyActive[rollingEnemyCounter]){
                     if(heavy){
-                        rollingEnemyPositionX.set(rollingEnemyCounter, -26.0);
                         rollingEnemyActive[rollingEnemyCounter] = false;
+                        rollingEnemyPositionX.set(rollingEnemyCounter, -26.0);
                         playAudio(killRollingEnemyAudio, soundEffectsVolume);
                         score++;
                     }else {
